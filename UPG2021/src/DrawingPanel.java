@@ -77,12 +77,19 @@ public class DrawingPanel extends JPanel {
 			}
 		}
 		//g.drawLine(maxVyskaX, maxVyskaY, width / 2, height / 2);
-		drawArrow( (vypocetSourX(maxVyskaX, maxVyskaY)- x_min)*scale, (vypocetSourX(maxVyskaX, maxVyskaY)- y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, 15, g2);
+		drawArrow( (vypocetSourX(maxVyskaX, maxVyskaY)- x_min)*scale, (vypocetSourY(maxVyskaX, maxVyskaY)- y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, 15, g2);
+		drawArrow( (vypocetSourX(1, 1)- x_min)*scale, (vypocetSourY(1, 1)- y_min)*scale,(1 - x_min)*scale, (1 - y_min) * scale, 15, g2);
+		drawArrow( (vypocetSourX(1, 120)- x_min)*scale, (vypocetSourY(1, 120)- y_min)*scale,(1 - x_min)*scale, (120 - y_min) * scale, 15, g2);
+		drawArrow( (vypocetSourX(1, 60)- x_min)*scale, (vypocetSourY(1, 60)- y_min)*scale,(1 - x_min)*scale, (60 - y_min) * scale, 15, g2);
+		drawArrow( (vypocetSourX(168, 1)- x_min)*scale, (vypocetSourY(168, 1)- y_min)*scale,(168 - x_min)*scale, (1 - y_min) * scale, 15, g2);
 		
+		drawArrow( (vypocetSourX(70, 70)- x_min)*scale, (vypocetSourY(70, 70)- y_min)*scale,(70 - x_min)*scale, (70 - y_min) * scale, 15, g2);
 		
 		System.out.println("MinVyska: " + maxVyska);
 		System.out.println("X1 " + maxVyskaX );
 		System.out.println("Y1 " + maxVyskaY );
+		System.out.println("X2 " + (vypocetSourX(maxVyskaX, maxVyskaY)));
+		System.out.println("Y2 " + (vypocetSourY(maxVyskaX, maxVyskaY)));
 		
 		//System.out.println(maxVyska);
 	}
@@ -204,7 +211,7 @@ public class DrawingPanel extends JPanel {
 				x2 = x1 - 25;
 			}
 			else {
-				x2 = x1 - 50;
+				x2 = x1 - 35;
 			}
 		}
 		else if(x1 <= 0 + 50) {
@@ -215,29 +222,26 @@ public class DrawingPanel extends JPanel {
 				x2 = x1 + 25;
 			}
 			else {
-				x2 = x1 + 50;
+				x2 = x1 + 35;
 			}
 		}
 		else {
-			x2 = x1 - 25;
+			if(y1 >= height - 50) {
+				x2 = x1 - 0;
+			}
+			else if (y1 <= 0 + 50 ) {
+				x2 = x1 - 0;
+			}
+			else {
+				x2 = x1 - 25;
+			}
 		}
 		return x2;
 	}
-	private double vypocetSourY(double x1, double y1) {
+	private double vypocetSourY(double x1, double y1) {//nefungchni
 		double x2 = 0;
 		double y2 = 0;
 		if(y1 >= height - 50) {
-			if(y1 >= width - 50) {
-				y2 = y1 + 25;
-			}
-			else if (y1 <= 0 + 50 ) {
-				y2 = y1 + 25;
-			}
-			else {
-				y2 = y1 + 50;
-			}
-		}
-		else if(y1 <= 0 + 50) {
 			if(x1 >= width - 50) {
 				y2 = y1 - 25;
 			}
@@ -245,11 +249,30 @@ public class DrawingPanel extends JPanel {
 				y2 = y1 - 25;
 			}
 			else {
-				y2 = y1 - 50;
+				y2 = y1 - 35;
+			}
+		}
+		else if(y1 <= 0 + 50) {
+			if(x1 >= width - 50) {
+				y2 = y1 + 25;
+			}
+			else if (x1 <= 0 + 50 ) {
+				y2 = y1 + 25;
+			}
+			else {
+				y2 = y1 + 35;
 			}
 		}
 		else {
-			y2 = y1 + 25;
+			if(x1 >= width - 50) {
+				y2 = y1 + 0;
+			}
+			else if (x1 <= 0 + 50 ) {
+				y2 = y1 + 0;
+			}
+			else {
+				y2 = y1 + 25;
+			}
 		}
 		return y2;
 	}
