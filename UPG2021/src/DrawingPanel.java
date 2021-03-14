@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 public class DrawingPanel extends JPanel {
 
 	static int maxColor = 0;
+	
 	int[][] pixels = nacteni("mona_lisa.ascii.pgm");
 	
 	int width = pixels.length;
@@ -27,7 +28,7 @@ public class DrawingPanel extends JPanel {
 	
 	int minVyskaX = 0;
 	int minVyskaY = 0;
-	int minVyska = 1000;
+	int minVyska = 0;
 	
 	double x_min = 0;
 	double y_min = 0;
@@ -55,52 +56,19 @@ public class DrawingPanel extends JPanel {
 
 
 		
-		for (int a = 0; a < height; a++) {//
-			for (int b = 0; b < width; b++) {
-
-				if (pixels[b][a] > maxVyska) {
-					maxVyska = pixels[b][a];
-					maxVyskaX = b;
-					maxVyskaY = a;
-					System.out.println("Max Vyska" + maxVyska);
-
-				}
-				if (pixels[b][a] < minVyska) {
-					minVyska = pixels[b][a];
-					minVyskaX = b;
-					minVyskaY = a;
-					System.out.println("Min Vyska" + minVyska);
-
-				}
-				if (maxColor > 255) {
-					double koef = maxColor / 255;
-					koef++;
-					
-					int color = (int) (pixels[b][a] / koef);
-					g.setColor(new Color(color, color, color));
-					g2.fill(new Rectangle2D.Double((b - x_min) * scale, (a - y_min) * scale, 1 * scale, 1 * scale));
-				} else if (maxColor < 255) {
-					double koef = 255 / maxColor;
-					koef++;
-					int color = (int) (pixels[b][a] * koef);
-					g.setColor(new Color(color, color, color));
-					g2.fill(new Rectangle2D.Double((b - x_min) * scale, (a - y_min) * scale, 1 * scale, 1 * scale));
-				} else {
-					g.setColor(new Color(pixels[b][a], pixels[b][a], pixels[b][a]));
-					g2.fill(new Rectangle2D.Double((b - x_min) * scale, (a - y_min) * scale, 1 * scale, 1 * scale));
-				}
-			}
-		}
+		drawImage(pixels, scale, g2);
 		//g.drawLine(maxVyskaX, maxVyskaY, width / 2, height / 2);
-		drawArrow( (vypocetSourX(maxVyskaX, maxVyskaY)- x_min)*scale, (vypocetSourY(maxVyskaX, maxVyskaY)- y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, 15, g2);
-		drawArrow( (vypocetSourX(minVyskaX, minVyskaY)- x_min)*scale, (vypocetSourY(minVyskaX, minVyskaY)- y_min)*scale,(minVyskaX - x_min)*scale, (minVyskaY - y_min) * scale, 15, g2);
-		popisBodu( (vypocetSourX(maxVyskaX, maxVyskaY)- x_min)*scale, (vypocetSourY(maxVyskaX, maxVyskaY)- y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, "testovaci otazka", g2, 7*scale);
+		drawArrow( (vypocetSourX(maxVyskaX, maxVyskaY) - x_min)*scale, (vypocetSourY(maxVyskaX, maxVyskaY) - y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, 15, g2);
+		//drawArrow( (vypocetSourX(minVyskaX, minVyskaY)- x_min)*scale, (vypocetSourY(minVyskaX, minVyskaY)- y_min)*scale,(minVyskaX - x_min)*scale, (minVyskaY - y_min) * scale, 15, g2);
+		//popisBodu( (vypocetSourX(maxVyskaX, maxVyskaY)- x_min)*scale, (vypocetSourY(maxVyskaX, maxVyskaY)- y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, "testovaci otazka", g2, 7, scale);
+		popisBodu( (vypocetSourX(maxVyskaX, maxVyskaY)), (vypocetSourY(maxVyskaX, maxVyskaY)),(maxVyskaX), (maxVyskaY), "подпись стрелки", g2, 10 * scale, scale);
+		
 		
 		drawArrow( (vypocetSourX(0, 70)- x_min)*scale, (vypocetSourY(0, 70)- y_min)*scale,(0 - x_min)*scale, (70 - y_min) * scale, 15, g2);//testovaci
-		popisBodu( (vypocetSourX(0, 70)- x_min)*scale, (vypocetSourY(0, 70)- y_min)*scale,(0 - x_min)*scale, (70 - y_min) * scale, "testovaci otazka", g2, 7*scale);
+		//popisBodu( (vypocetSourX(0, 70)- x_min)*scale, (vypocetSourY(0, 70)- y_min)*scale,(0 - x_min)*scale, (70 - y_min) * scale, "testovaci otazka", g2, 7*scale);
 		
 		drawArrow( (vypocetSourX(80, 70)- x_min)*scale, (vypocetSourY(80, 70)- y_min)*scale,(80 - x_min)*scale, (70 - y_min) * scale, 15, g2);//testovaci
-		popisBodu( (vypocetSourX(80, 70)- x_min)*scale, (vypocetSourY(80, 70)- y_min)*scale,(80 - x_min)*scale, (70 - y_min) * scale, "test", g2, 7*scale);
+		//popisBodu( (vypocetSourX(80, 70)- x_min)*scale, (vypocetSourY(80, 70)- y_min)*scale,(80 - x_min)*scale, (70 - y_min) * scale, "test", g2, 7*scale);
 		
 		System.out.println("Max Vyska: " + maxVyska);
 		System.out.println("X1 " + maxVyskaX );
@@ -190,6 +158,46 @@ public class DrawingPanel extends JPanel {
 
 	}
 	
+	private void drawImage (int[][] pixels, double scale, Graphics2D g2) {
+		
+		for (int a = 0; a < height; a++) {//
+			for (int b = 0; b < width; b++) {
+
+				if (pixels[b][a] > maxVyska) {
+					maxVyska = pixels[b][a];
+					maxVyskaX = b;
+					maxVyskaY = a;
+					System.out.println("Max Vyska" + maxVyska);
+
+				}
+				if (pixels[b][a] < minVyska) {
+					minVyska = pixels[b][a];
+					minVyskaX = b;
+					minVyskaY = a;
+					System.out.println("Min Vyska" + minVyska);
+
+				}
+				if (maxColor > 255) {
+					double koef = maxColor / 255;
+					koef++;
+					
+					int color = (int) (pixels[b][a] / koef);
+					g2.setColor(new Color(color, color, color));
+					g2.fill(new Rectangle2D.Double((b - x_min) * scale, (a - y_min) * scale, 1 * scale, 1 * scale));
+				} else if (maxColor < 255) {
+					double koef = 255 / maxColor;
+					koef++;
+					int color = (int) (pixels[b][a] * koef);
+					g2.setColor(new Color(color, color, color));
+					g2.fill(new Rectangle2D.Double((b - x_min) * scale, (a - y_min) * scale, 1 * scale, 1 * scale));
+				} else {
+					g2.setColor(new Color(pixels[b][a], pixels[b][a], pixels[b][a]));
+					g2.fill(new Rectangle2D.Double((b - x_min) * scale, (a - y_min) * scale, 1 * scale, 1 * scale));
+				}
+			}
+		}
+	}
+	
 	private void drawArrow(double x1, double y1, double x2, double y2, double tip_length, Graphics2D g2) {// kresli sibku podle souradnic
         
 		double u_x = x2 - x1;
@@ -214,25 +222,41 @@ public class DrawingPanel extends JPanel {
         double c_y =y2 - u_y*tip_length;
         
         g2.setStroke(new BasicStroke(3));
-        g2.draw(new Line2D.Double(c_x + v_x,c_y + v_y,x2,y2));    
-        g2.draw(new Line2D.Double(c_x - v_x,c_y - v_y,x2,y2)); 
+        g2.draw(new Line2D.Double(c_x + v_x, c_y + v_y, x2, y2));    
+        g2.draw(new Line2D.Double(c_x - v_x, c_y - v_y, x2, y2)); 
 	}
+	
+	
 	/**
 	 * Metoda priima vsichni souradnice sibky, a spocita spravne souradnice pro nadpis
-	 * @param x1
-	 * @param y1
-	 * @param x2
-	 * @param y2
-	 * @param nadpis
-	 * @param g2
-	 * @param font
+	 * @param x1 zacatek sibky
+	 * @param y1 zacatek sibky
+	 * @param x2 konec sibky
+	 * @param y2 konec sibky
+	 * @param nadpis String co bude napsano
+	 * @param g2 Graphics2D
+	 * @param velkostFontu velikost fontu
 	 */
-	private void popisBodu (double x1, double y1, double x2, double y2, String nadpis, Graphics2D g2, double font ) {// pise popis bodu
+	private void popisBodu (double x1, double y1, double x2, double y2, String nadpis, Graphics2D g2, double velkostFontu, double scale) {
 		
+		FontMetrics fm = g2.getFontMetrics();
+	
+		
+		g2.setColor(Color.BLACK);
+		Font font = new Font ("Calibri", Font.PLAIN, (int)velkostFontu);
+		g2.setFont(font);
+		
+		int delka2 = (int) (nadpis.length()*font.getSize());
+		//font.getSize();
+		double vyska = fm.getLineMetrics(nadpis, g2).getHeight();
+		double delka = fm.stringWidth(nadpis);
+		System.out.println(velkostFontu + " font");
+		System.out.println(delka2 + " delka2");
+		System.out.println(delka + ": delka");
+		System.out.println(vyska + ": vyska");
 		double sourPopisX = 0;
 		double sourPopisY = 0;
 		
-		int delkaPopis = nadpis.length();
 		if(y1 == y2) {
 			if(x1 > x2) {
 				sourPopisY = y1;
@@ -240,13 +264,13 @@ public class DrawingPanel extends JPanel {
 			}
 			else if(x1 < x2) {
 				sourPopisY = y1;
-				sourPopisX = x1 - (5 + delkaPopis * font);
+				sourPopisX = x1 - (5 + delka);
 			}
 		}
 		else if(y1 > y2) {
 			if(x1 == x2) {
-				sourPopisX = x1 - font * 2 ;
-				sourPopisY = y1 + font;
+				sourPopisX = ((x1) - x_min) * scale - delka2/2 ;
+				sourPopisY = (((y1 ) - y_min) * scale) + velkostFontu  ;
 			}
 			else if(x1 > x2) {
 				sourPopisX = x1 + 5;
@@ -254,24 +278,16 @@ public class DrawingPanel extends JPanel {
 			}
 			else if(x1 < x2) {
 				sourPopisY = y1;
-				sourPopisX = x1 - (5 + delkaPopis * font);
+				sourPopisX = x1 - (5 + delka * velkostFontu);
 			}
 		}
 		else if(y1 < y2) {
 			
 		}
 		
-		
-		
-		FontMetrics fm = g2.getFontMetrics();
-		g2.setColor(Color.BLACK);
-		
-		g2.setFont(new Font ("Calibri", Font.PLAIN, (int)font));
 		g2.drawString(nadpis, (int)sourPopisX, (int)sourPopisY);
 		
 	}
-	
-	
 	
 	
 	private double vypocetSourX(double x1, double y1) {
@@ -312,6 +328,7 @@ public class DrawingPanel extends JPanel {
 		}
 		return x2;
 	}
+	
 	private double vypocetSourY(double x1, double y1) {//nefungchni
 		double x2 = 0;
 		double y2 = 0;
