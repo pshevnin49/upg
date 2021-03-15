@@ -61,7 +61,7 @@ public class DrawingPanel extends JPanel {
 		drawArrow( (vypocetSourX(maxVyskaX, maxVyskaY) - x_min)*scale, (vypocetSourY(maxVyskaX, maxVyskaY) - y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, 15, g2);
 		//drawArrow( (vypocetSourX(minVyskaX, minVyskaY)- x_min)*scale, (vypocetSourY(minVyskaX, minVyskaY)- y_min)*scale,(minVyskaX - x_min)*scale, (minVyskaY - y_min) * scale, 15, g2);
 		//popisBodu( (vypocetSourX(maxVyskaX, maxVyskaY)- x_min)*scale, (vypocetSourY(maxVyskaX, maxVyskaY)- y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, "testovaci otazka", g2, 7, scale);
-		popisBodu( (vypocetSourX(maxVyskaX, maxVyskaY)), (vypocetSourY(maxVyskaX, maxVyskaY)),(maxVyskaX), (maxVyskaY), "подпись стрелки", g2, 10 * scale, scale);
+		popisBodu( (vypocetSourX(maxVyskaX, maxVyskaY)), (vypocetSourY(maxVyskaX, maxVyskaY)),(maxVyskaX), (maxVyskaY), "подпись", g2, 10 * scale, scale);
 		
 		
 		drawArrow( (vypocetSourX(0, 70)- x_min)*scale, (vypocetSourY(0, 70)- y_min)*scale,(0 - x_min)*scale, (70 - y_min) * scale, 15, g2);//testovaci
@@ -239,23 +239,21 @@ public class DrawingPanel extends JPanel {
 	 */
 	private void popisBodu (double x1, double y1, double x2, double y2, String nadpis, Graphics2D g2, double velkostFontu, double scale) {
 		
-		FontMetrics fm = g2.getFontMetrics();
-	
-		
 		g2.setColor(Color.BLACK);
 		Font font = new Font ("Calibri", Font.PLAIN, (int)velkostFontu);
 		g2.setFont(font);
 		
-		int delka2 = (int) (nadpis.length()*font.getSize());
-		//font.getSize();
+		FontMetrics fm = g2.getFontMetrics();
+	
+		int delka = (int)fm.getStringBounds(nadpis, g2).getWidth();
 		double vyska = fm.getLineMetrics(nadpis, g2).getHeight();
-		double delka = fm.stringWidth(nadpis);
+		
 		System.out.println(velkostFontu + " font");
-		System.out.println(delka2 + " delka2");
-		System.out.println(delka + ": delka");
+		System.out.println(delka + " delka");
 		System.out.println(vyska + ": vyska");
-		double sourPopisX = 0;
-		double sourPopisY = 0;
+		
+		double sourPopisX = 0;// souradnice X leveho dolniho rohu podpisu
+		double sourPopisY = 0;// souradnice Y leveho dolniho rohu podpisu
 		
 		if(y1 == y2) {
 			if(x1 > x2) {
@@ -269,8 +267,8 @@ public class DrawingPanel extends JPanel {
 		}
 		else if(y1 > y2) {
 			if(x1 == x2) {
-				sourPopisX = ((x1) - x_min) * scale - delka2/2 ;
-				sourPopisY = (((y1 ) - y_min) * scale) + velkostFontu  ;
+				sourPopisX = ((x1) - x_min ) * scale - delka/2 ;
+				sourPopisY = (((y1 ) - y_min) * scale) + velkostFontu;
 			}
 			else if(x1 > x2) {
 				sourPopisX = x1 + 5;
