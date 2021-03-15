@@ -17,7 +17,7 @@ public class DrawingPanel extends JPanel {
 
 	static int maxColor = 0;
 	
-	int[][] pixels = nacteni("mona_lisa.ascii.pgm");
+	int[][] pixels = nacteni("f14.ascii.pgm");
 	
 	int width = pixels.length;
 	int height = pixels[0].length;
@@ -39,8 +39,6 @@ public class DrawingPanel extends JPanel {
 	double world_height = y_max - y_min;
 	
 	public DrawingPanel() throws FileNotFoundException {
-		
-		
 		this.setPreferredSize(new Dimension(width, height));
 	}
 
@@ -53,22 +51,30 @@ public class DrawingPanel extends JPanel {
 		double scale_y = this.getHeight() / world_height;
 		double scale = Math.min(scale_x, scale_y);
 		
-
-
-		
 		drawImage(pixels, scale, g2);
-		//g.drawLine(maxVyskaX, maxVyskaY, width / 2, height / 2);
+		
 		drawArrow( (vypocetSourX(maxVyskaX, maxVyskaY) - x_min)*scale, (vypocetSourY(maxVyskaX, maxVyskaY) - y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, 15, g2);
-		//drawArrow( (vypocetSourX(minVyskaX, minVyskaY)- x_min)*scale, (vypocetSourY(minVyskaX, minVyskaY)- y_min)*scale,(minVyskaX - x_min)*scale, (minVyskaY - y_min) * scale, 15, g2);
-		//popisBodu( (vypocetSourX(maxVyskaX, maxVyskaY)- x_min)*scale, (vypocetSourY(maxVyskaX, maxVyskaY)- y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, "testovaci otazka", g2, 7, scale);
 		popisBodu( (vypocetSourX(maxVyskaX, maxVyskaY)), (vypocetSourY(maxVyskaX, maxVyskaY)),(maxVyskaX), (maxVyskaY), "подпись", g2, 10 * scale, scale);
 		
 		
 		drawArrow( (vypocetSourX(0, 70)- x_min)*scale, (vypocetSourY(0, 70)- y_min)*scale,(0 - x_min)*scale, (70 - y_min) * scale, 15, g2);//testovaci
-		//popisBodu( (vypocetSourX(0, 70)- x_min)*scale, (vypocetSourY(0, 70)- y_min)*scale,(0 - x_min)*scale, (70 - y_min) * scale, "testovaci otazka", g2, 7*scale);
+		popisBodu( (vypocetSourX(0, 70)), (vypocetSourY(0, 70)),(0), (70), "подпись", g2, 10 * scale, scale);
 		
 		drawArrow( (vypocetSourX(80, 70)- x_min)*scale, (vypocetSourY(80, 70)- y_min)*scale,(80 - x_min)*scale, (70 - y_min) * scale, 15, g2);//testovaci
-		//popisBodu( (vypocetSourX(80, 70)- x_min)*scale, (vypocetSourY(80, 70)- y_min)*scale,(80 - x_min)*scale, (70 - y_min) * scale, "test", g2, 7*scale);
+		popisBodu( (vypocetSourX(80, 70)), (vypocetSourY(80, 70)),(80), (70), "подпись", g2, 10 * scale, scale);
+		
+		drawArrow( (vypocetSourX(230, 120)- x_min)*scale, (vypocetSourY(230, 120)- y_min)*scale,(230 - x_min)*scale, (120 - y_min) * scale, 15, g2);//testovaci
+		popisBodu( (vypocetSourX(230, 120)), (vypocetSourY(230, 120)),(230), (120), "подпись", g2, 10 * scale, scale);
+		
+		
+		drawArrow( (vypocetSourX(125, 350)- x_min)*scale, (vypocetSourY(125, 350)- y_min)*scale,(125 - x_min)*scale, (350 - y_min) * scale, 15, g2);//testovaci
+		popisBodu( (vypocetSourX(125, 350)), (vypocetSourY(125, 350)),(125), (350), "подпись", g2, 10 * scale, scale);
+		
+		drawArrow( (vypocetSourX(640, 480)- x_min)*scale, (vypocetSourY(640, 480)- y_min)*scale,(640 - x_min)*scale, (480 - y_min) * scale, 15, g2);//testovaci
+		popisBodu( (vypocetSourX(640, 480)), (vypocetSourY(640, 480)),(640), (480), "подпись", g2, 10 * scale, scale);
+		
+		drawArrow( (vypocetSourX(0, 480)- x_min)*scale, (vypocetSourY(0, 480)- y_min)*scale,(0 - x_min)*scale, (480 - y_min) * scale, 15, g2);//testovaci
+		popisBodu( (vypocetSourX(0, 480)), (vypocetSourY(0, 480)),(0), (480), "подпись", g2, 10 * scale, scale);
 		
 		System.out.println("Max Vyska: " + maxVyska);
 		System.out.println("X1 " + maxVyskaX );
@@ -246,7 +252,7 @@ public class DrawingPanel extends JPanel {
 		FontMetrics fm = g2.getFontMetrics();
 	
 		int delka = (int)fm.getStringBounds(nadpis, g2).getWidth();
-		double vyska = fm.getLineMetrics(nadpis, g2).getHeight();
+		double vyska = (int)fm.getStringBounds(nadpis, g2).getHeight();
 		
 		System.out.println(velkostFontu + " font");
 		System.out.println(delka + " delka");
@@ -257,30 +263,41 @@ public class DrawingPanel extends JPanel {
 		
 		if(y1 == y2) {
 			if(x1 > x2) {
-				sourPopisY = y1;
-				sourPopisX = x1 + 5;
+				sourPopisY = (y1 - y_min) * scale;
+				sourPopisX = ((x1 - x_min ) * scale) + 5;
 			}
 			else if(x1 < x2) {
-				sourPopisY = y1;
-				sourPopisX = x1 - (5 + delka);
+				sourPopisY = (y1 - y_min) * scale;
+				sourPopisX = (x1 - x_min  * scale) - (5 + delka);
 			}
 		}
 		else if(y1 > y2) {
 			if(x1 == x2) {
-				sourPopisX = ((x1) - x_min ) * scale - delka/2 ;
-				sourPopisY = (((y1 ) - y_min) * scale) + velkostFontu;
+				sourPopisX = (x1 - x_min ) * scale - delka/2 ;
+				sourPopisY = (y1  - y_min * scale) + vyska;
 			}
 			else if(x1 > x2) {
-				sourPopisX = x1 + 5;
-				sourPopisY = y1;
+				sourPopisX = (x1 - x_min ) * scale + 5;
+				sourPopisY = (y1 - y_min) * scale;
 			}
 			else if(x1 < x2) {
-				sourPopisY = y1;
-				sourPopisX = x1 - (5 + delka * velkostFontu);
+				sourPopisY = (y1 - y_min) * scale;
+				sourPopisX = (x1 - x_min ) * scale - (5 + delka);
 			}
 		}
 		else if(y1 < y2) {
-			
+			if(x1 == x2) {
+				sourPopisX = ((x1 - x_min ) * scale) - delka/2 ;
+				sourPopisY = ((y1 - y_min) * scale) - vyska;
+			}
+			else if(x1 > x2) {
+				sourPopisX = ((x1 - x_min ) * scale) + 5;
+				sourPopisY = (y1 - y_min) * scale;
+			}
+			else if(x1 < x2) {
+				sourPopisY = (y1  - y_min) * scale;
+				sourPopisX = ((x1 - x_min ) * scale) - (5 + delka);
+			}
 		}
 		
 		g2.drawString(nadpis, (int)sourPopisX, (int)sourPopisY);
