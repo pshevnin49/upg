@@ -16,28 +16,28 @@ import javax.swing.JPanel;
 public class DrawingPanel extends JPanel {
 
 	static int maxColor = 0;
-	
-	int[][] pixels = nacteni("f14.ascii.pgm");
-	
+
+	int[][] pixels = nacteni("mona_lisa.ascii.pgm");
+
 	int width = pixels.length;
 	int height = pixels[0].length;
-	
+
 	int maxVyskaX = 0;
 	int maxVyskaY = 0;
 	int maxVyska = 0;
-	
+
 	int minVyskaX = 0;
 	int minVyskaY = 0;
 	int minVyska = 0;
-	
+
 	double x_min = 0;
 	double y_min = 0;
-	double x_max = width ;
+	double x_max = width;
 	double y_max = height;
-	
+
 	double world_width = x_max - x_min;
 	double world_height = y_max - y_min;
-	
+
 	public DrawingPanel() throws FileNotFoundException {
 		this.setPreferredSize(new Dimension(width, height));
 	}
@@ -50,39 +50,46 @@ public class DrawingPanel extends JPanel {
 		double scale_x = this.getWidth() / world_width;
 		double scale_y = this.getHeight() / world_height;
 		double scale = Math.min(scale_x, scale_y);
-		
+
 		drawImage(pixels, scale, g2);
-		
-		drawArrow( (vypocetSourX(maxVyskaX, maxVyskaY) - x_min)*scale, (vypocetSourY(maxVyskaX, maxVyskaY) - y_min)*scale,(maxVyskaX - x_min)*scale, (maxVyskaY - y_min) * scale, 15, g2);
-		popisBodu( (vypocetSourX(maxVyskaX, maxVyskaY)), (vypocetSourY(maxVyskaX, maxVyskaY)),(maxVyskaX), (maxVyskaY), "подпись", g2, 10 * scale, scale);
-		
-		
-		drawArrow( (vypocetSourX(0, 70)- x_min)*scale, (vypocetSourY(0, 70)- y_min)*scale,(0 - x_min)*scale, (70 - y_min) * scale, 15, g2);//testovaci
-		popisBodu( (vypocetSourX(0, 70)), (vypocetSourY(0, 70)),(0), (70), "подпись", g2, 10 * scale, scale);
-		
-		drawArrow( (vypocetSourX(80, 70)- x_min)*scale, (vypocetSourY(80, 70)- y_min)*scale,(80 - x_min)*scale, (70 - y_min) * scale, 15, g2);//testovaci
-		popisBodu( (vypocetSourX(80, 70)), (vypocetSourY(80, 70)),(80), (70), "подпись", g2, 10 * scale, scale);
-		
-		drawArrow( (vypocetSourX(230, 120)- x_min)*scale, (vypocetSourY(230, 120)- y_min)*scale,(230 - x_min)*scale, (120 - y_min) * scale, 15, g2);//testovaci
-		popisBodu( (vypocetSourX(230, 120)), (vypocetSourY(230, 120)),(230), (120), "подпись", g2, 10 * scale, scale);
-		
-		
-		drawArrow( (vypocetSourX(125, 350)- x_min)*scale, (vypocetSourY(125, 350)- y_min)*scale,(125 - x_min)*scale, (350 - y_min) * scale, 15, g2);//testovaci
-		popisBodu( (vypocetSourX(125, 350)), (vypocetSourY(125, 350)),(125), (350), "подпись", g2, 10 * scale, scale);
-		
-		drawArrow( (vypocetSourX(640, 480)- x_min)*scale, (vypocetSourY(640, 480)- y_min)*scale,(640 - x_min)*scale, (480 - y_min) * scale, 15, g2);//testovaci
-		popisBodu( (vypocetSourX(640, 480)), (vypocetSourY(640, 480)),(640), (480), "подпись", g2, 10 * scale, scale);
-		
-		drawArrow( (vypocetSourX(0, 480)- x_min)*scale, (vypocetSourY(0, 480)- y_min)*scale,(0 - x_min)*scale, (480 - y_min) * scale, 15, g2);//testovaci
-		popisBodu( (vypocetSourX(0, 480)), (vypocetSourY(0, 480)),(0), (480), "подпись", g2, 10 * scale, scale);
-		
+
+		drawArrow((vypocetSourX(maxVyskaX, maxVyskaY) - x_min) * scale,
+				(vypocetSourY(maxVyskaX, maxVyskaY) - y_min) * scale, (maxVyskaX - x_min) * scale,
+				(maxVyskaY - y_min) * scale, 15, g2);
+		popisBodu((vypocetSourX(maxVyskaX, maxVyskaY)), (vypocetSourY(maxVyskaX, maxVyskaY)), (maxVyskaX), (maxVyskaY),
+				"подпись", g2, 10 * scale, scale);
+
+		drawArrow((vypocetSourX(0, 70) - x_min) * scale, (vypocetSourY(0, 70) - y_min) * scale, (0 - x_min) * scale,
+				(70 - y_min) * scale, 10, g2);// testovaci
+		popisBodu((vypocetSourX(0, 70)), (vypocetSourY(0, 70)), (0), (70), "подпись", g2, 10 * scale, scale);
+
+		drawArrow((vypocetSourX(80, 70) - x_min) * scale, (vypocetSourY(80, 70) - y_min) * scale, (80 - x_min) * scale,
+				(70 - y_min) * scale, 10, g2);// testovaci
+		popisBodu((vypocetSourX(80, 70)), (vypocetSourY(80, 70)), (80), (70), "подпись", g2, 10 * scale, scale);
+
+		drawArrow((vypocetSourX(230, 120) - x_min) * scale, (vypocetSourY(230, 120) - y_min) * scale,
+				(230 - x_min) * scale, (120 - y_min) * scale, 10, g2);// testovaci
+		popisBodu((vypocetSourX(230, 120)), (vypocetSourY(230, 120)), (230), (120), "подпись", g2, 10 * scale, scale);
+
+		drawArrow((vypocetSourX(125, 350) - x_min) * scale, (vypocetSourY(125, 350) - y_min) * scale,
+				(125 - x_min) * scale, (350 - y_min) * scale, 10, g2);// testovaci
+		popisBodu((vypocetSourX(125, 350)), (vypocetSourY(125, 350)), (125), (350), "подпись", g2, 10 * scale, scale);
+
+		drawArrow((vypocetSourX(640, 480) - x_min) * scale, (vypocetSourY(640, 480) - y_min) * scale,
+				(640 - x_min) * scale, (480 - y_min) * scale, 10, g2);// testovaci
+		popisBodu((vypocetSourX(640, 480)), (vypocetSourY(640, 480)), (640), (480), "подпись", g2, 10 * scale, scale);
+
+		drawArrow((vypocetSourX(0, 480) - x_min) * scale, (vypocetSourY(0, 480) - y_min) * scale, (0 - x_min) * scale,
+				(480 - y_min) * scale, 10, g2);// testovaci
+		popisBodu((vypocetSourX(0, 480)), (vypocetSourY(0, 480)), (0), (480), "подпись", g2, 10 * scale, scale);
+
 		System.out.println("Max Vyska: " + maxVyska);
-		System.out.println("X1 " + maxVyskaX );
-		System.out.println("Y1 " + maxVyskaY );
+		System.out.println("X1 " + maxVyskaX);
+		System.out.println("Y1 " + maxVyskaY);
 		System.out.println("X2 " + (vypocetSourX(maxVyskaX, maxVyskaY)));
 		System.out.println("Y2 " + (vypocetSourY(maxVyskaX, maxVyskaY)));
-		
-		//System.out.println(maxVyska);
+
+		// System.out.println(maxVyska);
 	}
 
 	public static int[][] nacteni(String jmenoSouboru) throws FileNotFoundException {
@@ -123,7 +130,7 @@ public class DrawingPanel extends JPanel {
 		return pixels;
 	}
 
-	public static int[][] polace(int[][] array) { 
+	public static int[][] polace(int[][] array) {
 		int height = array[0].length;
 		int width = array.length;
 		int newWidth = (width * 2);
@@ -163,9 +170,9 @@ public class DrawingPanel extends JPanel {
 		return newArray;
 
 	}
-	
-	private void drawImage (int[][] pixels, double scale, Graphics2D g2) {
-		
+
+	private void drawImage(int[][] pixels, double scale, Graphics2D g2) {
+
 		for (int a = 0; a < height; a++) {//
 			for (int b = 0; b < width; b++) {
 
@@ -186,7 +193,7 @@ public class DrawingPanel extends JPanel {
 				if (maxColor > 255) {
 					double koef = maxColor / 255;
 					koef++;
-					
+
 					int color = (int) (pixels[b][a] / koef);
 					g2.setColor(new Color(color, color, color));
 					g2.fill(new Rectangle2D.Double((b - x_min) * scale, (a - y_min) * scale, 1 * scale, 1 * scale));
@@ -203,185 +210,170 @@ public class DrawingPanel extends JPanel {
 			}
 		}
 	}
-	
-	private void drawArrow(double x1, double y1, double x2, double y2, double tip_length, Graphics2D g2) {// kresli sibku podle souradnic
-        
+
+	private void drawArrow(double x1, double y1, double x2, double y2, double tip_length, Graphics2D g2) {// kresli
+																											// sibku
+																											// podle
+																											// souradnic
+
 		double u_x = x2 - x1;
-        double u_y = y2 - y1;
-        double u_len1 = 1 / Math.sqrt(u_x * u_x + u_y*u_y);
-        u_x *= u_len1;
-        u_y *= u_len1;
-        
-        g2.setColor(Color.BLACK);
-        g2.setStroke(new BasicStroke(3));
-        
-        g2.draw(new Line2D.Double(x1,y1,x2,y2));
-        
-        double v_x = u_y;
-        double v_y = -u_x;
-        
-       
-        v_x *= 0.5 * tip_length;
-        v_y *= 0.5 * tip_length;
-        
-        double c_x =x2 - u_x*tip_length;
-        double c_y =y2 - u_y*tip_length;
-        
-        g2.setStroke(new BasicStroke(3));
-        g2.draw(new Line2D.Double(c_x + v_x, c_y + v_y, x2, y2));    
-        g2.draw(new Line2D.Double(c_x - v_x, c_y - v_y, x2, y2)); 
+		double u_y = y2 - y1;
+		double u_len1 = 1 / Math.sqrt(u_x * u_x + u_y * u_y);
+		u_x *= u_len1;
+		u_y *= u_len1;
+
+		g2.setColor(Color.BLACK);
+		g2.setStroke(new BasicStroke(3));
+
+		g2.draw(new Line2D.Double(x1, y1, x2, y2));
+
+		double v_x = u_y;
+		double v_y = -u_x;
+
+		v_x *= 0.5 * tip_length;
+		v_y *= 0.5 * tip_length;
+
+		double c_x = x2 - u_x * tip_length;
+		double c_y = y2 - u_y * tip_length;
+
+		g2.setStroke(new BasicStroke(3));
+		g2.draw(new Line2D.Double(c_x + v_x, c_y + v_y, x2, y2));
+		g2.draw(new Line2D.Double(c_x - v_x, c_y - v_y, x2, y2));
 	}
-	
-	
+
 	/**
-	 * Metoda priima vsichni souradnice sibky, a spocita spravne souradnice pro nadpis
-	 * @param x1 zacatek sibky
-	 * @param y1 zacatek sibky
-	 * @param x2 konec sibky
-	 * @param y2 konec sibky
-	 * @param nadpis String co bude napsano
-	 * @param g2 Graphics2D
+	 * Metoda priima vsichni souradnice sibky, a spocita spravne souradnice pro
+	 * nadpis
+	 * 
+	 * @param x1           zacatek sibky X
+	 * @param y1           zacatek sibky Y
+	 * @param x2           konec sibky X
+	 * @param y2           konec sibky Y
+	 * @param nadpis       String co bude napsano
+	 * @param g2           Graphics2D
 	 * @param velkostFontu velikost fontu
 	 */
-	private void popisBodu (double x1, double y1, double x2, double y2, String nadpis, Graphics2D g2, double velkostFontu, double scale) {
-		
+	private void popisBodu(double x1, double y1, double x2, double y2, String nadpis, Graphics2D g2,
+			double velkostFontu, double scale) {
+
 		g2.setColor(Color.BLACK);
-		Font font = new Font ("Calibri", Font.PLAIN, (int)velkostFontu);
+		Font font = new Font("Calibri", Font.PLAIN, (int) velkostFontu);
 		g2.setFont(font);
-		
+
 		FontMetrics fm = g2.getFontMetrics();
-	
-		int delka = (int)fm.getStringBounds(nadpis, g2).getWidth();
-		double vyska = (int)fm.getStringBounds(nadpis, g2).getHeight();
-		
+
+		int delka = (int) fm.getStringBounds(nadpis, g2).getWidth();
+		double vyska = (int) fm.getStringBounds(nadpis, g2).getHeight();
+
 		System.out.println(velkostFontu + " font");
 		System.out.println(delka + " delka");
 		System.out.println(vyska + ": vyska");
-		
+
 		double sourPopisX = 0;// souradnice X leveho dolniho rohu podpisu
 		double sourPopisY = 0;// souradnice Y leveho dolniho rohu podpisu
-		
-		if(y1 == y2) {
-			if(x1 > x2) {
+
+		if (y1 == y2) {
+			if (x1 > x2) {
 				sourPopisY = (y1 - y_min) * scale;
-				sourPopisX = ((x1 - x_min ) * scale) + 5;
-			}
-			else if(x1 < x2) {
+				sourPopisX = ((x1 - x_min) * scale) + 5;
+			} else if (x1 < x2) {
 				sourPopisY = (y1 - y_min) * scale;
-				sourPopisX = (x1 - x_min  * scale) - (5 + delka);
+				sourPopisX = ((x1 - x_min) * scale) - (5 + delka);
 			}
-		}
-		else if(y1 > y2) {
-			if(x1 == x2) {
-				sourPopisX = (x1 - x_min ) * scale - delka/2 ;
-				sourPopisY = (y1  - y_min * scale) + vyska;
-			}
-			else if(x1 > x2) {
-				sourPopisX = (x1 - x_min ) * scale + 5;
+		} else if (y1 > y2) {
+			if (x1 == x2) {
+				sourPopisX = ((x1 - x_min) * scale) - delka / 2;
+				sourPopisY = ((y1 - y_min) * scale) + vyska;
+			} else if (x1 > x2) {
+				sourPopisX = (x1 - x_min) * scale + 5;
 				sourPopisY = (y1 - y_min) * scale;
-			}
-			else if(x1 < x2) {
+			} else if (x1 < x2) {
 				sourPopisY = (y1 - y_min) * scale;
-				sourPopisX = (x1 - x_min ) * scale - (5 + delka);
+				sourPopisX = (x1 - x_min) * scale - (5 + delka);
 			}
-		}
-		else if(y1 < y2) {
-			if(x1 == x2) {
-				sourPopisX = ((x1 - x_min ) * scale) - delka/2 ;
+		} else if (y1 < y2) {
+			if (x1 == x2) {
+				sourPopisX = ((x1 - x_min) * scale) - delka / 2;
 				sourPopisY = ((y1 - y_min) * scale) - vyska;
-			}
-			else if(x1 > x2) {
-				sourPopisX = ((x1 - x_min ) * scale) + 5;
+			} else if (x1 > x2) {
+				sourPopisX = ((x1 - x_min) * scale) + 5;
 				sourPopisY = (y1 - y_min) * scale;
-			}
-			else if(x1 < x2) {
-				sourPopisY = (y1  - y_min) * scale;
-				sourPopisX = ((x1 - x_min ) * scale) - (5 + delka);
+			} else if (x1 < x2) {
+				sourPopisY = (y1 - y_min) * scale;
+				sourPopisX = ((x1 - x_min) * scale) - (5 + delka);
 			}
 		}
-		
-		g2.drawString(nadpis, (int)sourPopisX, (int)sourPopisY);
-		
+
+		g2.drawString(nadpis, (int) sourPopisX, (int) sourPopisY);
+
 	}
-	
+	/**
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @return
+	 */
 	
 	private double vypocetSourX(double x1, double y1) {
 		double x2 = 0;
 		double y2 = 0;
-		if(x1 >= width - 50) {
-			if(y1 >= height - 50) {
+		if (x1 >= width - 50) {
+			if (y1 >= height - 50) {
 				x2 = x1 - 25;
-			}
-			else if (y1 <= 0 + 50 ) {
+			} else if (y1 <= 0 + 50) {
 				x2 = x1 - 25;
-			}
-			else {
+			} else {
 				x2 = x1 - 35;
 			}
-		}
-		else if(x1 <= 0 + 50) {
-			if(y1 >= height - 50) {
+		} else if (x1 <= 0 + 50) {
+			if (y1 >= height - 50) {
 				x2 = x1 + 25;
-			}
-			else if (y1 <= 0 + 50 ) {
+			} else if (y1 <= 0 + 50) {
 				x2 = x1 + 25;
-			}
-			else {
+			} else {
 				x2 = x1 + 35;
 			}
-		}
-		else {
-			if(y1 >= height - 50) {
+		} else {
+			if (y1 >= height - 50) {
 				x2 = x1 - 0;
-			}
-			else if (y1 <= 0 + 50 ) {
+			} else if (y1 <= 0 + 50) {
 				x2 = x1 - 0;
-			}
-			else {
+			} else {
 				x2 = x1 - 25;
 			}
 		}
 		return x2;
 	}
-	
-	private double vypocetSourY(double x1, double y1) {//nefungchni
+
+	private double vypocetSourY(double x1, double y1) {
 		double x2 = 0;
 		double y2 = 0;
-		if(y1 >= height - 50) {
-			if(x1 >= width - 50) {
+		if (y1 >= height - 50) {
+			if (x1 >= width - 50) {
 				y2 = y1 - 25;
-			}
-			else if (x1 <= 0 + 50 ) {
+			} else if (x1 <= 0 + 50) {
 				y2 = y1 - 25;
-			}
-			else {
+			} else {
 				y2 = y1 - 35;
 			}
-		}
-		else if(y1 <= 0 + 50) {
-			if(x1 >= width - 50) {
+		} else if (y1 <= 0 + 50) {
+			if (x1 >= width - 50) {
 				y2 = y1 + 25;
-			}
-			else if (x1 <= 0 + 50 ) {
+			} else if (x1 <= 0 + 50) {
 				y2 = y1 + 25;
-			}
-			else {
+			} else {
 				y2 = y1 + 35;
 			}
-		}
-		else {
-			if(x1 >= width - 50) {
+		} else {
+			if (x1 >= width - 50) {
 				y2 = y1 + 0;
-			}
-			else if (x1 <= 0 + 50 ) {
+			} else if (x1 <= 0 + 50) {
 				y2 = y1 + 0;
-			}
-			else {
+			} else {
 				y2 = y1 + 25;
 			}
 		}
 		return y2;
 	}
-	
 
 }
