@@ -25,10 +25,14 @@ public class DrawingPanel extends JPanel {
 	int maxVyskaX = 0;
 	int maxVyskaY = 0;
 	int maxVyska = 0;
-
+	
+	int maxSloupaniX = 0;
+	int maxSloupaniY = 0;
+	int maxSloupani = 0;
+	
 	int minVyskaX = 0;
 	int minVyskaY = 0;
-	int minVyska = 0;
+	int minVyska = 1000;
 
 	double x_min = 0;
 	double y_min = 0;
@@ -57,32 +61,20 @@ public class DrawingPanel extends JPanel {
 				(vypocetSourY(maxVyskaX, maxVyskaY) - y_min) * scale, (maxVyskaX - x_min) * scale,
 				(maxVyskaY - y_min) * scale, 15, g2);
 		popisBodu((vypocetSourX(maxVyskaX, maxVyskaY)), (vypocetSourY(maxVyskaX, maxVyskaY)), (maxVyskaX), (maxVyskaY),
-				"ïîäïèñü", g2, 10 * scale, scale);
+				"max. Vyska", g2, 9 * scale, scale);
 
-		drawArrow((vypocetSourX(0, 70) - x_min) * scale, (vypocetSourY(0, 70) - y_min) * scale, (0 - x_min) * scale,
-				(70 - y_min) * scale, 10, g2);// testovaci
-		popisBodu((vypocetSourX(0, 70)), (vypocetSourY(0, 70)), (0), (70), "ïîäïèñü", g2, 10 * scale, scale);
-
-		drawArrow((vypocetSourX(80, 70) - x_min) * scale, (vypocetSourY(80, 70) - y_min) * scale, (80 - x_min) * scale,
-				(70 - y_min) * scale, 10, g2);// testovaci
-		popisBodu((vypocetSourX(80, 70)), (vypocetSourY(80, 70)), (80), (70), "ïîäïèñü", g2, 10 * scale, scale);
-
-		drawArrow((vypocetSourX(230, 120) - x_min) * scale, (vypocetSourY(230, 120) - y_min) * scale,
-				(230 - x_min) * scale, (120 - y_min) * scale, 10, g2);// testovaci
-		popisBodu((vypocetSourX(230, 120)), (vypocetSourY(230, 120)), (230), (120), "ïîäïèñü", g2, 10 * scale, scale);
-
-		drawArrow((vypocetSourX(125, 350) - x_min) * scale, (vypocetSourY(125, 350) - y_min) * scale,
-				(125 - x_min) * scale, (350 - y_min) * scale, 10, g2);// testovaci
-		popisBodu((vypocetSourX(125, 350)), (vypocetSourY(125, 350)), (125), (350), "ïîäïèñü", g2, 10 * scale, scale);
-
-		drawArrow((vypocetSourX(640, 480) - x_min) * scale, (vypocetSourY(640, 480) - y_min) * scale,
-				(640 - x_min) * scale, (480 - y_min) * scale, 10, g2);// testovaci
-		popisBodu((vypocetSourX(640, 480)), (vypocetSourY(640, 480)), (640), (480), "ïîäïèñü", g2, 10 * scale, scale);
-
-		drawArrow((vypocetSourX(0, 480) - x_min) * scale, (vypocetSourY(0, 480) - y_min) * scale, (0 - x_min) * scale,
-				(480 - y_min) * scale, 10, g2);// testovaci
-		popisBodu((vypocetSourX(0, 480)), (vypocetSourY(0, 480)), (0), (480), "ïîäïèñü", g2, 10 * scale, scale);
-
+		drawArrow((vypocetSourX(minVyskaX, minVyskaY) - x_min) * scale,
+				(vypocetSourY(minVyskaX, minVyskaY) - y_min) * scale, (minVyskaX - x_min) * scale,
+				(minVyskaY - y_min) * scale, 15, g2);
+		popisBodu((vypocetSourX(minVyskaX, minVyskaY)), (vypocetSourY(minVyskaX, minVyskaY)), (minVyskaX), (minVyskaY),
+				"min. Vyska", g2, 9 * scale, scale);
+		
+		drawArrow((vypocetSourX(maxSloupaniX, maxSloupaniY) - x_min) * scale,
+				(vypocetSourY(maxSloupaniX, maxSloupaniY) - y_min) * scale, (maxSloupaniX - x_min) * scale,
+				(maxSloupaniY - y_min) * scale, 15, g2);
+		popisBodu((vypocetSourX(maxSloupaniX, maxSloupaniY)), (vypocetSourY(maxSloupaniX, maxSloupaniY)), (maxSloupaniX), (maxSloupaniY),
+				"max. Sloupani", g2, 9 * scale, scale);
+		System.out.println("Max Sloupani: " + maxSloupani);
 		System.out.println("Max Vyska: " + maxVyska);
 		System.out.println("X1 " + maxVyskaX);
 		System.out.println("Y1 " + maxVyskaY);
@@ -176,6 +168,194 @@ public class DrawingPanel extends JPanel {
 		for (int a = 0; a < height; a++) {//
 			for (int b = 0; b < width; b++) {
 
+				System.out.println("Sloupani: " + maxSloupani);
+				if(b <= 0 && a <= 0) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a + 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a + 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b + 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b + 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				
+				else if(b <= 0 && a < height - 1) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a - 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a - 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a + 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a + 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b + 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b + 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				else if(a <= 0 && b < width - 1) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a + 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a + 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b - 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b - 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b + 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b + 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				else if(a >= height && b >= width) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b - 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b - 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a - 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a - 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				else if(b <= 0 && a >= height) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a - 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a - 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b - 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b - 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b + 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b + 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				else if(a <= 0 && b >= width) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a + 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a + 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b - 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b - 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a - 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a - 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				else if(a <= 0 && b > 0 && b < width - 1) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a + 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a + 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b - 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b - 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b + 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b + 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				else if(b <= 0 && a > 0 && a < height - 1) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a + 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a + 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a + 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a + 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b + 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b + 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				else if(a >= height) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b - 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b - 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a - 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a - 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b + 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b + 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				else if(b >= width) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b - 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b - 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a - 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a - 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a + 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a + 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				else if (b < width - 1 && a < height - 1 && a > 0 && b > 0) {
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b - 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b - 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a - 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a - 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b][a + 1])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b][a + 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if(maxSloupani < Math.abs(pixels [b][a] - pixels [b + 1][a])) {
+						maxSloupani = Math.abs(pixels [b][a] - pixels [b + 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+				}
+				
+				
+				
+				
 				if (pixels[b][a] > maxVyska) {
 					maxVyska = pixels[b][a];
 					maxVyskaX = b;
@@ -210,12 +390,16 @@ public class DrawingPanel extends JPanel {
 			}
 		}
 	}
-
-	private void drawArrow(double x1, double y1, double x2, double y2, double tip_length, Graphics2D g2) {// kresli
-																											// sibku
-																											// podle
-																											// souradnic
-
+	/**
+	 * KreslÃ­ Å¡ibku, podlÃ© zadanÃ© souÅ™adnÃ­ce
+	 * @param x1 zaÄatek Å¡ibky x
+	 * @param y1 zaÄatek Å¡ibky y
+	 * @param x2 konec Å¡ibkÃ½ x
+	 * @param y2 konec Å¡ibkÃ½ y
+	 * @param tip_length delka Â¨vousÅ¯Â¨ Å¡ibkÃ½
+	 * @param g2 Draphics 2D
+	 */
+	private void drawArrow(double x1, double y1, double x2, double y2, double tip_length, Graphics2D g2) {
 		double u_x = x2 - x1;
 		double u_y = y2 - y1;
 		double u_len1 = 1 / Math.sqrt(u_x * u_x + u_y * u_y);
@@ -307,42 +491,43 @@ public class DrawingPanel extends JPanel {
 		g2.drawString(nadpis, (int) sourPopisX, (int) sourPopisY);
 
 	}
+
 	/**
-	 * 
-	 * @param x1
-	 * @param y1
-	 * @return
+	 * Methoda spoÄitÃ¡ souÅ™adnÃ­ce X zaÄatku Å¡ibkÃ½ ze souÅ™. koncovÃ©ho bodu Å¡ibky
+	 * @param x2
+	 * @param y2
+	 * @return 
 	 */
-	
-	private double vypocetSourX(double x1, double y1) {
-		double x2 = 0;
-		double y2 = 0;
-		if (x1 >= width - 50) {
-			if (y1 >= height - 50) {
-				x2 = x1 - 25;
-			} else if (y1 <= 0 + 50) {
-				x2 = x1 - 25;
+
+	private double vypocetSourX(double x2, double y2) {
+		double x1 = 0;
+		double y1 = 0;
+		if (x2 >= width - 50) {
+			if (y2 >= height - 50) {
+				x1 = x2 - 25;
+			} else if (y2 <= 0 + 50) {
+				x1 = x2 - 25;
 			} else {
-				x2 = x1 - 35;
+				x1 = x2 - 35;
 			}
-		} else if (x1 <= 0 + 50) {
-			if (y1 >= height - 50) {
-				x2 = x1 + 25;
-			} else if (y1 <= 0 + 50) {
-				x2 = x1 + 25;
+		} else if (x2 <= 0 + 50) {
+			if (y2 >= height - 50) {
+				x1 = x2 + 25;
+			} else if (y2 <= 0 + 50) {
+				x1 = x2 + 25;
 			} else {
-				x2 = x1 + 35;
+				x1 = x2 + 35;
 			}
 		} else {
-			if (y1 >= height - 50) {
-				x2 = x1 - 0;
-			} else if (y1 <= 0 + 50) {
-				x2 = x1 - 0;
+			if (y2 >= height - 50) {
+				x1 = x2 - 0;
+			} else if (y2 <= 0 + 50) {
+				x1 = x2 - 0;
 			} else {
-				x2 = x1 - 25;
+				x1 = x2 - 25;
 			}
 		}
-		return x2;
+		return x1;
 	}
 
 	private double vypocetSourY(double x1, double y1) {
