@@ -7,11 +7,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Scanner;
 
 import javax.swing.JPanel;
+
+
 
 public class DrawingPanel extends JPanel {
 
@@ -50,7 +53,8 @@ public class DrawingPanel extends JPanel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2 = (Graphics2D) g;
-
+		
+		
 		double scale_x = this.getWidth() / world_width;
 		double scale_y = this.getHeight() / world_height;
 		double scale = Math.min(scale_x, scale_y);
@@ -184,188 +188,7 @@ public class DrawingPanel extends JPanel {
 
 				System.out.println("Sloupani: " + maxSloupani);
 
-				if (b <= 0) {
-					if (a <= 0) {
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a + 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a + 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b + 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b + 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-					} else if (a < height - 1) {
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a - 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a - 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a + 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a + 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b + 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b + 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-					}
-
-					else if (a >= height) {
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a - 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a - 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b + 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b + 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-					} else if (a < height - 1) {
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a + 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a + 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a + 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a + 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b + 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b + 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-					}
-				} else if (a <= 0) {
-					if (b < width - 1) {
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a + 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a + 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b + 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b + 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-					} else if (b >= width) {
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a + 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a + 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a - 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a - 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-					}
-					else if (b > 0 && b < width - 1) {
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a + 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a + 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b + 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b + 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-
-					}
-				} 
-				else if (a >= height) {
-					if (b >= width) {
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a - 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a - 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-
-					}
-					else if (b >= width) {
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a - 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a - 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-
-					}
-					else {
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a - 1])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b][a - 1]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-						if (maxSloupani < Math.abs(pixels[b][a] - pixels[b + 1][a])) {
-							maxSloupani = Math.abs(pixels[b][a] - pixels[b + 1][a]);
-							maxSloupaniX = b;
-							maxSloupaniY = a;
-						}
-					}
-				
-				}
-				
-
-				
-				else if (b >= width) {
-					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
-						maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
-						maxSloupaniX = b;
-						maxSloupaniY = a;
-					}
-					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a - 1])) {
-						maxSloupani = Math.abs(pixels[b][a] - pixels[b][a - 1]);
-						maxSloupaniX = b;
-						maxSloupaniY = a;
-					}
-					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a + 1])) {
-						maxSloupani = Math.abs(pixels[b][a] - pixels[b][a + 1]);
-						maxSloupaniX = b;
-						maxSloupaniY = a;
-					}
-				} else if (b < width - 1 && a < height - 1 && a > 0 && b > 0) {
+				try {
 					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
 						maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
 						maxSloupaniX = b;
@@ -386,8 +209,11 @@ public class DrawingPanel extends JPanel {
 						maxSloupaniX = b;
 						maxSloupaniY = a;
 					}
+				}catch(IndexOutOfBoundsException e) {
+					
 				}
-
+				
+			
 				if (pixels[b][a] > maxVyska) {
 					maxVyska = pixels[b][a];
 					maxVyskaX = b;
