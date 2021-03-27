@@ -14,28 +14,14 @@ import java.util.Scanner;
 
 import javax.swing.JPanel;
 
-
-
 public class DrawingPanel extends JPanel {
 
 	static int maxColor = 0;
 
-	int[][] pixels = nacteni("data_upg.pgm");
+	int[][] pixels = nacteni("data_plzen.pgm");
 
 	int width = pixels.length;
 	int height = pixels[0].length;
-
-	int maxVyskaX = 0;
-	int maxVyskaY = 0;
-	int maxVyska = 0;
-
-	int maxSloupaniX = 0;
-	int maxSloupaniY = 0;
-	int maxSloupani = 0;
-
-	int minVyskaX = 0;
-	int minVyskaY = 0;
-	int minVyska = 1000;
 
 	double x_min = 0;
 	double y_min = 0;
@@ -53,11 +39,22 @@ public class DrawingPanel extends JPanel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2 = (Graphics2D) g;
-		
-		
+
 		double scale_x = this.getWidth() / world_width;
 		double scale_y = this.getHeight() / world_height;
 		double scale = Math.min(scale_x, scale_y);
+
+		SouradniceXY maxSloupaniXY = maxSloupani(pixels);
+		int maxSloupaniX = maxSloupaniXY.getX();
+		int maxSloupaniY = maxSloupaniXY.getY();
+		
+		SouradniceXY maxPrevyseniXY = maxPrevyseni(pixels);
+		int maxVyskaX = maxPrevyseniXY.getX();
+		int maxVyskaY = maxPrevyseniXY.getY();
+		
+		SouradniceXY minPrevyseniXY = minPrevyseni(pixels);
+		int minVyskaX = minPrevyseniXY.getX();
+		int minVyskaY = minPrevyseniXY.getY();
 
 		drawImage(pixels, scale, g2);
 
@@ -78,13 +75,113 @@ public class DrawingPanel extends JPanel {
 				(maxSloupaniY - y_min) * scale, 15, g2);
 		popisBodu((vypocetSourX(maxSloupaniX, maxSloupaniY)), (vypocetSourY(maxSloupaniX, maxSloupaniY)),
 				(maxSloupaniX), (maxSloupaniY), "max. Sloupani", g2, 9 * scale, scale);
-		System.out.println("Max Sloupani: " + maxSloupani);
-		System.out.println("Max Vyska: " + maxVyska);
-		System.out.println("X1 " + maxVyskaX);
-		System.out.println("Y1 " + maxVyskaY);
-		System.out.println("X2 " + (vypocetSourX(maxVyskaX, maxVyskaY)));
-		System.out.println("Y2 " + (vypocetSourY(maxVyskaX, maxVyskaY)));
+		
 
+	}
+
+	/**
+	 * Method maxSloupani prijima pixels[][], hleda bod maximalniho sloupani a vrati
+	 * objekt SouradniceXY maximalniho sloupani
+	 * 
+	 * @param pixels
+	 * @return
+	 */
+	public static SouradniceXY maxSloupani(int pixels[][]) {
+
+		int maxSloupani = 0;
+		int maxSloupaniX = 0;
+		int maxSloupaniY = 0;
+		int width = pixels.length;
+		int height = pixels[0].length;
+
+		for (int a = 0; a < height; a++) {//
+			for (int b = 0; b < width; b++) {
+				try {
+					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
+						maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a - 1])) {
+						maxSloupani = Math.abs(pixels[b][a] - pixels[b][a - 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a + 1])) {
+						maxSloupani = Math.abs(pixels[b][a] - pixels[b][a + 1]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+					}
+					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b + 1][a])) {
+						maxSloupani = Math.abs(pixels[b][a] - pixels[b + 1][a]);
+						maxSloupaniX = b;
+						maxSloupaniY = a;
+
+					}
+				} catch (IndexOutOfBoundsException e) {
+
+				}
+
+			}
+		}
+		SouradniceXY maxSloupaniXY = new SouradniceXY(maxSloupaniX, maxSloupaniY);
+
+		return maxSloupaniXY;
+	}
+	/**
+	 * Method maxVyska prijima pixels[][], hleda bod maximalniho prevyseni a vrati
+	 * objekt SouradniceXY souradnice maximalniho prevyseni
+	 * @param pixels
+	 * @return
+	 */
+	public static SouradniceXY maxPrevyseni(int pixels[][]) {
+		int maxVyska = 0;
+		int maxVyskaX = 0;
+		int maxVyskaY = 0;
+		int width = pixels.length;
+		int height = pixels[0].length;
+		
+		for (int a = 0; a < height; a++) {//
+			for (int b = 0; b < width; b++) {
+				if (pixels[b][a] > maxVyska) {
+					maxVyska = pixels[b][a];
+					maxVyskaX = b;
+					maxVyskaY = a;
+
+				}
+			}
+		}
+		SouradniceXY maxVyskaXY = new SouradniceXY(maxVyskaX, maxVyskaY);
+		return maxVyskaXY;
+	}
+	
+	/**
+	 * Method minVyska prijima pixels[][], hleda bod minimalniho prevyseni a vrati
+	 * objekt SouradniceXY souradnice minimalniho prevyseni
+	 * @param pixels
+	 * @return SouradniceXY
+	 */
+	public static SouradniceXY minPrevyseni(int pixels[][]) {
+		int minVyska = 1000;
+		int minVyskaX = 0;
+		int minVyskaY = 0;
+		int width = pixels.length;
+		int height = pixels[0].length;
+		
+		for (int a = 0; a < height; a++) {//
+			for (int b = 0; b < width; b++) {
+				if (pixels[b][a] < minVyska) {
+					minVyska = pixels[b][a];
+					minVyskaX = b;
+					minVyskaY = a;
+					System.out.println("Min Vyska" + minVyska);
+
+				}
+			}
+		}
+		SouradniceXY minVyskaXY = new SouradniceXY(minVyskaX, minVyskaY);
+		
+		return minVyskaXY;
 	}
 
 	/**
@@ -186,48 +283,6 @@ public class DrawingPanel extends JPanel {
 		for (int a = 0; a < height; a++) {//
 			for (int b = 0; b < width; b++) {
 
-				System.out.println("Sloupani: " + maxSloupani);
-
-				try {
-					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b - 1][a])) {
-						maxSloupani = Math.abs(pixels[b][a] - pixels[b - 1][a]);
-						maxSloupaniX = b;
-						maxSloupaniY = a;
-					}
-					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a - 1])) {
-						maxSloupani = Math.abs(pixels[b][a] - pixels[b][a - 1]);
-						maxSloupaniX = b;
-						maxSloupaniY = a;
-					}
-					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b][a + 1])) {
-						maxSloupani = Math.abs(pixels[b][a] - pixels[b][a + 1]);
-						maxSloupaniX = b;
-						maxSloupaniY = a;
-					}
-					if (maxSloupani < Math.abs(pixels[b][a] - pixels[b + 1][a])) {
-						maxSloupani = Math.abs(pixels[b][a] - pixels[b + 1][a]);
-						maxSloupaniX = b;
-						maxSloupaniY = a;
-					}
-				}catch(IndexOutOfBoundsException e) {
-					
-				}
-				
-			
-				if (pixels[b][a] > maxVyska) {
-					maxVyska = pixels[b][a];
-					maxVyskaX = b;
-					maxVyskaY = a;
-					System.out.println("Max Vyska" + maxVyska);
-
-				}
-				if (pixels[b][a] < minVyska) {
-					minVyska = pixels[b][a];
-					minVyskaX = b;
-					minVyskaY = a;
-					System.out.println("Min Vyska" + minVyska);
-
-				}
 				if (maxColor > 255) {
 					double koef = maxColor / 255;
 					koef++;
