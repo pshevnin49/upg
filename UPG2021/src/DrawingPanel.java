@@ -20,8 +20,8 @@ public class DrawingPanel extends JPanel {
 
 	int[][] pixels = nacteni("data_plzen.pgm");
 
-	int width = pixels.length;
-	int height = pixels[0].length;
+	static int width;
+	static int height;
 
 	double x_min = 0;
 	double y_min = 0;
@@ -224,10 +224,7 @@ public class DrawingPanel extends JPanel {
 
 		int[][] pixels = new int[width][height];
 
-		System.out.println("width " + width);
-		System.out.println("height " + height);
-		System.out.println("Max value of color " + maxColor);
-
+		
 		for (int a = 0; a < height; a++) {
 			for (int b = 0; b < width; b++) {
 				pixels[b][a] = scn.nextInt();
@@ -238,46 +235,7 @@ public class DrawingPanel extends JPanel {
 		return pixels;
 	}
 
-	public static int[][] polace(int[][] array) {
-		int height = array[0].length;
-		int width = array.length;
-		int newWidth = (width * 2);
-		int newHeight = (height * 2);
-		System.out.println(newWidth);
-		System.out.println(newHeight);
-		int[][] newArray = new int[newWidth][newHeight];
-		int koefWidth = 0;
-		int koefHeight = 0;
-
-		for (int a = 0; a < newHeight; a += 2) {
-			for (int b = 0; b < newWidth; b += 2) {
-
-				newArray[b][a] = array[koefWidth][koefHeight];
-				koefWidth++;
-
-			}
-			koefWidth = 0;
-			koefHeight++;
-		}
-		for (int a = 0; a < newHeight - 1; a += 2) {
-			for (int b = 1; b < newWidth - 1; b += 2) {
-
-				newArray[b][a] = (newArray[b - 1][a] + newArray[b + 1][a]) / 2;
-
-			}
-
-		}
-		for (int a = 0; a < newWidth - 1; a++) {
-			for (int b = 1; b < newHeight - 1; b += 2) {
-
-				newArray[a][b] = (newArray[a][b - 1] + newArray[a][b + 1]) / 2;
-			}
-
-		}
-
-		return newArray;
-
-	}
+	
 
 	/**
 	 * Metoda vykresli Obrazek podle dat z arraje, taky hleda parametry max.a min.
