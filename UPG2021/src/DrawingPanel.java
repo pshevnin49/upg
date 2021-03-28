@@ -19,7 +19,11 @@ public class DrawingPanel extends JPanel {
 	static int maxColor = 0;
 
 	int[][] pixels = nacteni("data_plzen.pgm");
-
+	
+	
+	private BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR);
+	
+	
 	static int width;
 	static int height;
 
@@ -39,7 +43,9 @@ public class DrawingPanel extends JPanel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2 = (Graphics2D) g;
-
+		
+		
+		
 		double scale_x = this.getWidth() / world_width;
 		double scale_y = this.getHeight() / world_height;
 		double scale = Math.min(scale_x, scale_y);
