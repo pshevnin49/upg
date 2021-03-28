@@ -47,35 +47,41 @@ public class DrawingPanel extends JPanel {
 		SouradniceXY maxSloupaniXY = maxSloupani(pixels);
 		int maxSloupaniX = maxSloupaniXY.getX();
 		int maxSloupaniY = maxSloupaniXY.getY();
-		
+
 		SouradniceXY maxPrevyseniXY = maxPrevyseni(pixels);
 		int maxVyskaX = maxPrevyseniXY.getX();
 		int maxVyskaY = maxPrevyseniXY.getY();
-		
+
 		SouradniceXY minPrevyseniXY = minPrevyseni(pixels);
 		int minVyskaX = minPrevyseniXY.getX();
 		int minVyskaY = minPrevyseniXY.getY();
 
+		SouradniceXY maxPrevArrowSourXY2 = arrowSourXY2(maxVyskaX, maxVyskaY);
+		int maxPrevArrowX2 = maxPrevArrowSourXY2.getX();
+		int maxPrevArrowY2 = maxPrevArrowSourXY2.getY();
+
+		SouradniceXY minPrevArrowSourXY2 = arrowSourXY2(minVyskaX, minVyskaY);
+		int minPrevArrowX2 = minPrevArrowSourXY2.getX();
+		int minPrevArrowY2 = minPrevArrowSourXY2.getY();
+
+		SouradniceXY maxSloupArrowSourXY2 = arrowSourXY2(maxSloupaniX, maxSloupaniY);
+		int maxSloupArrowX2 = maxSloupArrowSourXY2.getX();
+		int maxSloupArrowY2 = maxSloupArrowSourXY2.getY();
+
 		drawImage(pixels, scale, g2);
 
-		drawArrow((vypocetSourX(maxVyskaX, maxVyskaY) - x_min) * scale,
-				(vypocetSourY(maxVyskaX, maxVyskaY) - y_min) * scale, (maxVyskaX - x_min) * scale,
+		drawArrow((maxPrevArrowX2 - x_min) * scale, (maxPrevArrowY2 - y_min) * scale, (maxVyskaX - x_min) * scale,
 				(maxVyskaY - y_min) * scale, 15, g2);
-		popisBodu((vypocetSourX(maxVyskaX, maxVyskaY)), (vypocetSourY(maxVyskaX, maxVyskaY)), (maxVyskaX), (maxVyskaY),
-				"max. Vyska", g2, 9 * scale, scale);
+		popisBodu((maxPrevArrowX2), (maxPrevArrowY2), (maxVyskaX), (maxVyskaY), "max. Vyska", g2, 9 * scale, scale);
 
-		drawArrow((vypocetSourX(minVyskaX, minVyskaY) - x_min) * scale,
-				(vypocetSourY(minVyskaX, minVyskaY) - y_min) * scale, (minVyskaX - x_min) * scale,
+		drawArrow((minPrevArrowX2 - x_min) * scale, (minPrevArrowY2 - y_min) * scale, (minVyskaX - x_min) * scale,
 				(minVyskaY - y_min) * scale, 15, g2);
-		popisBodu((vypocetSourX(minVyskaX, minVyskaY)), (vypocetSourY(minVyskaX, minVyskaY)), (minVyskaX), (minVyskaY),
-				"min. Vyska", g2, 9 * scale, scale);
+		popisBodu(minPrevArrowX2, minPrevArrowY2, (minVyskaX), (minVyskaY), "min. Vyska", g2, 9 * scale, scale);
 
-		drawArrow((vypocetSourX(maxSloupaniX, maxSloupaniY) - x_min) * scale,
-				(vypocetSourY(maxSloupaniX, maxSloupaniY) - y_min) * scale, (maxSloupaniX - x_min) * scale,
+		drawArrow((maxSloupArrowX2 - x_min) * scale, (maxSloupArrowY2 - y_min) * scale, (maxSloupaniX - x_min) * scale,
 				(maxSloupaniY - y_min) * scale, 15, g2);
-		popisBodu((vypocetSourX(maxSloupaniX, maxSloupaniY)), (vypocetSourY(maxSloupaniX, maxSloupaniY)),
-				(maxSloupaniX), (maxSloupaniY), "max. Sloupani", g2, 9 * scale, scale);
-		
+		popisBodu(maxSloupArrowX2, maxSloupArrowY2, (maxSloupaniX), maxSloupaniY, "max. Sloupani", g2, 9 * scale,
+				scale);
 
 	}
 
@@ -128,9 +134,11 @@ public class DrawingPanel extends JPanel {
 
 		return maxSloupaniXY;
 	}
+
 	/**
 	 * Method maxVyska prijima pixels[][], hleda bod maximalniho prevyseni a vrati
 	 * objekt SouradniceXY souradnice maximalniho prevyseni
+	 * 
 	 * @param pixels
 	 * @return
 	 */
@@ -140,7 +148,7 @@ public class DrawingPanel extends JPanel {
 		int maxVyskaY = 0;
 		int width = pixels.length;
 		int height = pixels[0].length;
-		
+
 		for (int a = 0; a < height; a++) {//
 			for (int b = 0; b < width; b++) {
 				if (pixels[b][a] > maxVyska) {
@@ -154,10 +162,11 @@ public class DrawingPanel extends JPanel {
 		SouradniceXY maxVyskaXY = new SouradniceXY(maxVyskaX, maxVyskaY);
 		return maxVyskaXY;
 	}
-	
+
 	/**
 	 * Method minVyska prijima pixels[][], hleda bod minimalniho prevyseni a vrati
 	 * objekt SouradniceXY souradnice minimalniho prevyseni
+	 * 
 	 * @param pixels
 	 * @return SouradniceXY
 	 */
@@ -167,7 +176,7 @@ public class DrawingPanel extends JPanel {
 		int minVyskaY = 0;
 		int width = pixels.length;
 		int height = pixels[0].length;
-		
+
 		for (int a = 0; a < height; a++) {//
 			for (int b = 0; b < width; b++) {
 				if (pixels[b][a] < minVyska) {
@@ -180,7 +189,7 @@ public class DrawingPanel extends JPanel {
 			}
 		}
 		SouradniceXY minVyskaXY = new SouradniceXY(minVyskaX, minVyskaY);
-		
+
 		return minVyskaXY;
 	}
 
@@ -409,79 +418,51 @@ public class DrawingPanel extends JPanel {
 	}
 
 	/**
-	 * Methoda spočitá souřadníce X začatku šibký ze souř. koncového bodu šibky
+	 * Methoda spočitá souřadníce X a Y začatku šibký a vratí objekt SouradniceXY
 	 * 
 	 * @param x2
 	 * @param y2
 	 * @return
 	 */
-	private double vypocetSourX(double x2, double y2) {
+	private SouradniceXY arrowSourXY2(double x2, double y2) {
 		double x1 = 0;
 		double y1 = 0;
+
 		if (x2 >= width - 50) {
 			if (y2 >= height - 50) {
 				x1 = x2 - 25;
+				y1 = y2 - 25;
 			} else if (y2 <= 0 + 50) {
 				x1 = x2 - 25;
+				y1 = y2 + 25;
 			} else {
 				x1 = x2 - 35;
 			}
 		} else if (x2 <= 0 + 50) {
 			if (y2 >= height - 50) {
 				x1 = x2 + 25;
+				y1 = y2 - 25;
 			} else if (y2 <= 0 + 50) {
 				x1 = x2 + 25;
+				y1 = y2 + 25;
 			} else {
 				x1 = x2 + 35;
 			}
 		} else {
 			if (y2 >= height - 50) {
 				x1 = x2 - 0;
+				y1 = y2 - 35;
 			} else if (y2 <= 0 + 50) {
 				x1 = x2 - 0;
+				y1 = y2 + 35;
 			} else {
 				x1 = x2 - 25;
+				y1 = y2 + 25;
 			}
 		}
-		return x1;
-	}
 
-	/**
-	 * Methoda spočitá souřadníce Y začatku šibký ze souř. koncového bodu šibky
-	 * 
-	 * @param x2
-	 * @param y2
-	 * @return
-	 */
-	private double vypocetSourY(double x1, double y1) {
-		double x2 = 0;
-		double y2 = 0;
-		if (y1 >= height - 50) {
-			if (x1 >= width - 50) {
-				y2 = y1 - 25;
-			} else if (x1 <= 0 + 50) {
-				y2 = y1 - 25;
-			} else {
-				y2 = y1 - 35;
-			}
-		} else if (y1 <= 0 + 50) {
-			if (x1 >= width - 50) {
-				y2 = y1 + 25;
-			} else if (x1 <= 0 + 50) {
-				y2 = y1 + 25;
-			} else {
-				y2 = y1 + 35;
-			}
-		} else {
-			if (x1 >= width - 50) {
-				y2 = y1 + 0;
-			} else if (x1 <= 0 + 50) {
-				y2 = y1 + 0;
-			} else {
-				y2 = y1 + 25;
-			}
-		}
-		return y2;
+		SouradniceXY vypoceSouradniceXY = new SouradniceXY((int) x1, (int) y1);
+		return vypoceSouradniceXY;
 	}
 
 }
