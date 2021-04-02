@@ -1,3 +1,5 @@
+package src;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -5,6 +7,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -16,84 +19,69 @@ import javax.swing.JPanel;
 
 public class DrawingPanel extends JPanel {
 
-	static int maxColor = 0;
-
-	int[][] pixels = nacteni("data_plzen.pgm");
+	private BufferedImage bg_img = nacteniPGM("data\\data_plzen.pgm");
+	private BufferedImage image;
+	public static int [] data;
 	
-	
-	private BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR);
-	
-	
-	int width = pixels.length;
-	int height = pixels[0].length;
-
-	double x_min = 0;
-	double y_min = 0;
-	double x_max = width;
-	double y_max = height;
-
-	double world_width = x_max - x_min;
-	double world_height = y_max - y_min;
-
 	public DrawingPanel() throws FileNotFoundException {
 		this.setPreferredSize(new Dimension(800, 800));
 	}
+
 	
 	
+	public void setPixels (int[] data) {
+		this.data = data;
+	}
+
+	/**
+	 * Prizpusobuje PGM data do RGB;
+	 */
+	private void processImage() {
+		int iW = bg_img.getWidth();
+		int iH = bg_img.getHeight();
+		this.image = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);
+
+		int[] pixels = new int[iW * iH];
+
+		bg_img.getRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely do arraje
+
+		for (int i = 0; i < pixels.length; i++) {
+			int in_rgb = pixels[i];
+
+			int b = in_rgb;
+			int g = in_rgb;
+			int r = in_rgb;
+
+			int gr = (1 * b + 3 * r + 6 * g) / 10;
+
+			b = gr;
+			g = gr;
+			r = gr;
+
+			int out_rgb = (r << 16) | (g << 8) | b;
+			pixels[i] = out_rgb;
+
+		}
+
+		image.setRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely z arraje
+	}
 
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2 = (Graphics2D) g;
-		
-		double scale_x = this.getWidth() / world_width;
-		double scale_y = this.getHeight() / world_height;
-		double scale = Math.min(scale_x, scale_y);
 
-		SouradniceXY maxSloupaniXY = maxSloupani(pixels);
-		int maxSloupaniX = maxSloupaniXY.getX();
-		int maxSloupaniY = maxSloupaniXY.getY();
-
-		SouradniceXY maxPrevyseniXY = maxPrevyseni(pixels);
-		int maxVyskaX = maxPrevyseniXY.getX();
-		int maxVyskaY = maxPrevyseniXY.getY();
-
-		SouradniceXY minPrevyseniXY = minPrevyseni(pixels);
-		int minVyskaX = minPrevyseniXY.getX();
-		int minVyskaY = minPrevyseniXY.getY();
-
-		SouradniceXY maxPrevArrowSourXY2 = arrowSourXY2(maxVyskaX, maxVyskaY);
-		int maxPrevArrowX2 = maxPrevArrowSourXY2.getX();
-		int maxPrevArrowY2 = maxPrevArrowSourXY2.getY();
-
-		SouradniceXY minPrevArrowSourXY2 = arrowSourXY2(minVyskaX, minVyskaY);
-		int minPrevArrowX2 = minPrevArrowSourXY2.getX();
-		int minPrevArrowY2 = minPrevArrowSourXY2.getY();
-
-		SouradniceXY maxSloupArrowSourXY2 = arrowSourXY2(maxSloupaniX, maxSloupaniY);
-		int maxSloupArrowX2 = maxSloupArrowSourXY2.getX();
-		int maxSloupArrowY2 = maxSloupArrowSourXY2.getY();
-
-		drawImage(pixels, scale, g2);
-
-		drawArrow((maxPrevArrowX2 - x_min) * scale, (maxPrevArrowY2 - y_min) * scale, (maxVyskaX - x_min) * scale,
-				(maxVyskaY - y_min) * scale, 15, g2);
-		popisBodu((maxPrevArrowX2), (maxPrevArrowY2), (maxVyskaX), (maxVyskaY), "max. Vyska", g2, 9 * scale, scale);
-
-		drawArrow((minPrevArrowX2 - x_min) * scale, (minPrevArrowY2 - y_min) * scale, (minVyskaX - x_min) * scale,
-				(minVyskaY - y_min) * scale, 15, g2);
-		popisBodu(minPrevArrowX2, minPrevArrowY2, (minVyskaX), (minVyskaY), "min. Vyska", g2, 9 * scale, scale);
-
-		drawArrow((maxSloupArrowX2 - x_min) * scale, (maxSloupArrowY2 - y_min) * scale, (maxSloupaniX - x_min) * scale,
-				(maxSloupaniY - y_min) * scale, 15, g2);
-		popisBodu(maxSloupArrowX2, maxSloupArrowY2, (maxSloupaniX), maxSloupaniY, "max. Sloupani", g2, 9 * scale,
-				scale);
-		
-		System.out.println("max sloup " + maxSloupaniX + " " + maxSloupaniY);
+		processImage();
+		try {
+			drawPlzenImage(g2, this.getWidth(), this.getHeight());
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
-	public void drawJungle(Graphics2D g2, int W, int H) {////
+	public void drawPlzenImage(Graphics2D g2, int W, int H) throws FileNotFoundException {////
 		g2.setColor(Color.BLACK);
 		g2.fillRect(0, 0, W, H);
 
@@ -111,12 +99,91 @@ public class DrawingPanel extends JPanel {
 		int startX = (W - niW) / 2;
 		int startY = (H - niH) / 2;
 
-		g2.drawImage(image, startX, startY, niW, niH, null);
+		int[][] pixels = arrayToDoubleArray(data);
+		//int[][] pixels = arrayToDoubleArray(data);
 		
+		SouradniceXY maxSloupaniSour = maxSloupani(pixels);
+		int maxSloupaniX = maxSloupaniSour.getX();
+		int maxSloupaniY = maxSloupaniSour.getY();
+
+		SouradniceXY maxPrevyseniSour = maxPrevyseni(pixels);
+		int maxPrevyseniX = maxPrevyseniSour.getX();
+		int maxPrevyseniY = maxPrevyseniSour.getY();
+		
+		SouradniceXY minPrevyseniSour = minPrevyseni(pixels);
+		int minPrevyseniX = minPrevyseniSour.getX();
+		int minPrevyseniY = minPrevyseniSour.getY();
+
+		RenderingHints rh = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		RenderingHints aliasing = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+
+		g2.setRenderingHints(rh);
+
+		g2.drawImage(image, startX, startY, niW, niH, null);
+
+		g2.setRenderingHints(aliasing);
+
+		drawArrow(maxSloupaniX, maxSloupaniY, g2, scale, startX, startY);
+		drawDesc(maxSloupaniX, maxSloupaniY, "Max. sloupani", g2, scale, startX, startY);
+
+		drawArrow(maxPrevyseniX, maxPrevyseniY, g2, scale, startX, startY);
+		drawDesc(maxPrevyseniX, maxPrevyseniY, "Max. prevyseni", g2, scale, startX, startY);
+		
+		drawArrow(minPrevyseniX, minPrevyseniY, g2, scale, startX, startY);
+		drawDesc(minPrevyseniX, minPrevyseniY, "Max. prevyseni", g2, scale, startX, startY);
 	}
 	
 	
-	
+	public static BufferedImage nacteniPGM(String jmenoSouboru) throws FileNotFoundException {
+		FileReader read = new FileReader(jmenoSouboru);
+		Scanner scn = new Scanner(read);
+		int maxColor;
+		int width = 0;
+		int height = 0;
+		scn.nextLine();
+		String line = scn.nextLine();
+		if (line.startsWith("#")) {
+			while (line.startsWith("#")) {
+				line = scn.nextLine();
+			}
+			Scanner l = new Scanner(line);
+			width = l.nextInt();
+			height = l.nextInt();
+			maxColor = scn.nextInt();
+		} else {
+			Scanner l = new Scanner(line);
+			width = l.nextInt();
+			height = l.nextInt();
+			maxColor = scn.nextInt();
+		}
+
+		int[]pixels = new int[width * height];
+
+		for (int i = 0; i < pixels.length; i++) {
+			if (maxColor > 255) {
+				double koef = maxColor / 255;
+				koef++;
+
+				int color = (int) (scn.nextInt() / koef);
+				pixels[i] = color;
+			} else if (maxColor < 255) {
+				double koef = 255 / maxColor;
+				koef++;
+				int color = (int) (scn.nextInt() * koef);
+				pixels[i] = color;
+			} else {
+				pixels[i] = scn.nextInt();
+			}
+		}
+		
+		data = pixels;
+		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		img.setRGB(0, 0, width, height, pixels, 0, width);
+		return img;
+	}
+
 	/**
 	 * Method maxSloupani prijima pixels[][], hleda bod maximalniho sloupani a vrati
 	 * objekt SouradniceXY maximalniho sloupani
@@ -162,7 +229,7 @@ public class DrawingPanel extends JPanel {
 			}
 		}
 		SouradniceXY maxSloupaniXY = new SouradniceXY(maxSloupaniX, maxSloupaniY);
-		System.out.println("Max sloupani x " + maxSloupaniX + " " + maxSloupaniY);
+
 		return maxSloupaniXY;
 	}
 
@@ -214,7 +281,7 @@ public class DrawingPanel extends JPanel {
 					minVyska = pixels[b][a];
 					minVyskaX = b;
 					minVyskaY = a;
-					System.out.println("Min Vyska" + minVyska);
+					
 
 				}
 			}
@@ -231,76 +298,25 @@ public class DrawingPanel extends JPanel {
 	 * @return pixels array dat ze souboru
 	 * @throws FileNotFoundException
 	 */
-	public static int[][] nacteni(String jmenoSouboru) throws FileNotFoundException {
-		FileReader read = new FileReader(jmenoSouboru);
-		Scanner scn = new Scanner(read);
-		int width = 0;
-		int height = 0;
-		scn.nextLine();
-		String line = scn.nextLine();
-		if (line.startsWith("#")) {
-			while (line.startsWith("#")) {
-				line = scn.nextLine();
-			}
-			Scanner l = new Scanner(line);
-			width = l.nextInt();
-			height = l.nextInt();
-			maxColor = scn.nextInt();
-		} else {
-			Scanner l = new Scanner(line);
-			width = l.nextInt();
-			height = l.nextInt();
-			maxColor = scn.nextInt();
-		}
+
+	public int[][] arrayToDoubleArray(int[] data) {
+
+		int width = image.getWidth();
+		int height = image.getHeight();
 
 		int[][] pixels = new int[width][height];
 
-		
+		int index = 0;
 		for (int a = 0; a < height; a++) {
 			for (int b = 0; b < width; b++) {
-				pixels[b][a] = scn.nextInt();
+				pixels[b][a] = data[index];
 				
+				index++;
+
 			}
 		}
 
 		return pixels;
-	}
-
-	
-
-	/**
-	 * Metoda vykresli Obrazek podle dat z arraje, taky hleda parametry max.a min.
-	 * Vyska, max. Sloupani
-	 * 
-	 * @param pixels
-	 * @param scale
-	 * @param g2
-	 */
-	private void drawImage(int[][] pixels, double scale, Graphics2D g2) {
-
-		for (int a = 0; a < height; a++) {//
-			for (int b = 0; b < width; b++) {
-
-				if (maxColor > 255) {
-					double koef = maxColor / 255;
-					koef++;
-
-					int color = (int) (pixels[b][a] / koef);
-					g2.setColor(new Color(color, color, color));
-					g2.fill(new Rectangle2D.Double((b - x_min) * scale, (a - y_min) * scale, 1 * scale, 1 * scale));
-				} else if (maxColor < 255) {
-					double koef = 255 / maxColor;
-					koef++;
-					int color = (int) (pixels[b][a] * koef);
-					g2.setColor(new Color(color, color, color));
-					g2.fill(new Rectangle2D.Double((b - x_min) * scale, (a - y_min) * scale, 1 * scale, 1 * scale));
-				} else {
-					g2.setColor(new Color(pixels[b][a], pixels[b][a], pixels[b][a]));
-					g2.fill(new Rectangle2D.Double((b - x_min) * scale, (a - y_min) * scale, 1 * scale, 1 * scale));
-				}
-			}
-		}
-
 	}
 
 	/**
@@ -312,18 +328,33 @@ public class DrawingPanel extends JPanel {
 	 * @param y2         konec šibký y
 	 * @param tip_length delka ¨vousů¨ šibký
 	 * @param g2         Draphics 2D
+	 * @param startY
+	 * @param startX
 	 */
-	private void drawArrow(double x1, double y1, double x2, double y2, double tip_length, Graphics2D g2) {
+	private void drawArrow(int x2, int y2, Graphics2D g2, double scale, int startX, int startY) {
+
+		SouradniceXY souradniceX2Y2 = vypocetSouradniceX1Y1(x2, y2);
+
+		int x1 = (int) (souradniceX2Y2.getX());
+		int y1 = (int) (souradniceX2Y2.getY());
+
+		x1 = (int) (x1 + startX);
+		y1 = (int) (y1 + startY);
+		x2 = (int) (x2 + startX);
+		y2 = (int) (y2 + startY);
+		
 		double u_x = x2 - x1;
 		double u_y = y2 - y1;
 		double u_len1 = 1 / Math.sqrt(u_x * u_x + u_y * u_y);
+
 		u_x *= u_len1;
 		u_y *= u_len1;
+		double tip_length = 10;
 
 		g2.setColor(Color.BLACK);
 		g2.setStroke(new BasicStroke(3));
 
-		g2.draw(new Line2D.Double(x1, y1, x2, y2));
+		g2.draw(new Line2D.Double(x1, y1, x2, y2));// zopacnil jsem x1 y1 a x2 y2
 
 		double v_x = u_y;
 		double v_y = -u_x;
@@ -349,11 +380,22 @@ public class DrawingPanel extends JPanel {
 	 * @param y2           konec sibky Y
 	 * @param nadpis       String co bude napsano
 	 * @param g2           Graphics2D
+	 * @param startY 
+	 * @param startX 
 	 * @param velkostFontu velikost fontu
 	 */
-	private void popisBodu(double x1, double y1, double x2, double y2, String nadpis, Graphics2D g2,
-			double velkostFontu, double scale) {
-
+	private void drawDesc(int x2, int y2, String nadpis, Graphics2D g2, double scale, int startX, int startY) {
+		
+		SouradniceXY souradniceX2Y2 = vypocetSouradniceX1Y1(x2, y2);
+		int x1 = souradniceX2Y2.getX();
+		int y1 = souradniceX2Y2.getY();
+		
+		x1 = (int) (x1 * scale + startX);
+		y1 = (int) (y1 * scale + startY);
+		x2 = (int) (x2 * scale + startX);
+		y2 = (int) (y2 * scale + startY);
+		
+		double velkostFontu = 5 * scale;
 		g2.setColor(Color.BLACK);
 		Font font = new Font("Calibri", Font.PLAIN, (int) velkostFontu);
 		g2.setFont(font);
@@ -361,44 +403,41 @@ public class DrawingPanel extends JPanel {
 		FontMetrics fm = g2.getFontMetrics();
 
 		int delka = (int) fm.getStringBounds(nadpis, g2).getWidth();
-		double vyska = (int) fm.getStringBounds(nadpis, g2).getHeight();
+		int vyska = (int) fm.getStringBounds(nadpis, g2).getHeight();
 
-		System.out.println(velkostFontu + " font");
-		System.out.println(delka + " delka");
-		System.out.println(vyska + ": vyska");
-
+		
 		double sourPopisX = 0;// souradnice X leveho dolniho rohu podpisu
 		double sourPopisY = 0;// souradnice Y leveho dolniho rohu podpisu
 
 		if (y1 == y2) {
 			if (x1 > x2) {
-				sourPopisY = (y1 - y_min) * scale;
-				sourPopisX = ((x1 - x_min) * scale) + 5;
+				sourPopisY = y1;
+				sourPopisX = x1 + 5;
 			} else if (x1 < x2) {
-				sourPopisY = (y1 - y_min) * scale;
-				sourPopisX = ((x1 - x_min) * scale) - (5 + delka);
+				sourPopisY = y1;
+				sourPopisX = x1 - (5 + delka);
 			}
 		} else if (y1 > y2) {
 			if (x1 == x2) {
-				sourPopisX = ((x1 - x_min) * scale) - delka / 2;
-				sourPopisY = ((y1 - y_min) * scale) + vyska;
+				sourPopisX = x1 - delka / 2;
+				sourPopisY = y1 + vyska;
 			} else if (x1 > x2) {
-				sourPopisX = (x1 - x_min) * scale + 5;
-				sourPopisY = (y1 - y_min) * scale;
+				sourPopisX = x1 + 5;
+				sourPopisY = y1;
 			} else if (x1 < x2) {
-				sourPopisY = (y1 - y_min) * scale;
-				sourPopisX = (x1 - x_min) * scale - (5 + delka);
+				sourPopisY = y1;
+				sourPopisX = x1 - (5 + delka);
 			}
 		} else if (y1 < y2) {
 			if (x1 == x2) {
-				sourPopisX = ((x1 - x_min) * scale) - delka / 2;
-				sourPopisY = ((y1 - y_min) * scale) - vyska;
+				sourPopisX = x1 - delka / 2;
+				sourPopisY = y1 - vyska;
 			} else if (x1 > x2) {
-				sourPopisX = ((x1 - x_min) * scale) + 5;
-				sourPopisY = (y1 - y_min) * scale;
+				sourPopisX = x1 + 5;
+				sourPopisY = y1;
 			} else if (x1 < x2) {
-				sourPopisY = (y1 - y_min) * scale;
-				sourPopisX = ((x1 - x_min) * scale) - (5 + delka);
+				sourPopisY = y1;
+				sourPopisX = x1 - (5 + delka);
 			}
 		}
 
@@ -406,16 +445,24 @@ public class DrawingPanel extends JPanel {
 
 	}
 
+	
+
 	/**
-	 * Methoda spočitá souřadníce X a Y začatku šibký a vratí objekt SouradniceXY
+	 * Methoda spočitá souřadníce X a Y začatku šibký a vratí objekt
+	 * SouradniceXY
 	 * 
 	 * @param x2
 	 * @param y2
 	 * @return
 	 */
-	private SouradniceXY arrowSourXY2(double x2, double y2) {
+	private SouradniceXY vypocetSouradniceX1Y1(int x2, int y2) {
+
 		double x1 = 0;
 		double y1 = 0;
+
+		int width = image.getWidth();
+
+		int height = image.getHeight();
 
 		if (x2 >= width - 50) {
 			if (y2 >= height - 50) {
@@ -453,7 +500,5 @@ public class DrawingPanel extends JPanel {
 		SouradniceXY vypoceSouradniceXY = new SouradniceXY((int) x1, (int) y1);
 		return vypoceSouradniceXY;
 	}
-	
-	
 
 }
