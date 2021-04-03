@@ -32,10 +32,6 @@ public class DrawingPanel extends JPanel {
 
 	}
 
-	public void setPixels(int[] data) {
-		this.data = data;
-	}
-
 	/**
 	 * Prizpusobuje PGM data do RGB;
 	 */
@@ -138,7 +134,8 @@ public class DrawingPanel extends JPanel {
 
 		drawArrow(minPrevyseniX, minPrevyseniY, g2, scale, startX, startY);
 		drawDesc(minPrevyseniX, minPrevyseniY, "Max. prevyseni", g2, scale, startX, startY);
-
+		
+		
 	}
 
 	public static BufferedImage nacteniPGM(String jmenoSouboru) throws FileNotFoundException {
@@ -321,19 +318,19 @@ public class DrawingPanel extends JPanel {
 	}
 
 	/**
-	 * Kreslí šibku, podlé zadané souřadníce
 	 * 
-	 * @param x1         začatek šibky x
-	 * @param y1         začatek šibky y
-	 * @param x2         konec šibký x
-	 * @param y2         konec šibký y
-	 * @param tip_length delka ¨vousů¨ šibký
-	 * @param g2         Draphics 2D
-	 * @param startY
+	 * @param x2
+	 * @param y2
+	 * @param g2
+	 * @param scale
 	 * @param startX
+	 * @param startY
 	 */
 	private void drawArrow(int x2, int y2, Graphics2D g2, double scale, int startX, int startY) {
-
+		
+		
+		
+		
 		x2 = (int) ((x2 * scale) + startX);
 		y2 = (int) ((y2 * scale) + startY);
 
@@ -353,8 +350,6 @@ public class DrawingPanel extends JPanel {
 		g2.setColor(Color.BLACK);
 		g2.setStroke(new BasicStroke(3));
 
-		g2.draw(new Line2D.Double(x1, y1, x2, y2));// zopacnil jsem x1 y1 a x2 y2
-
 		double v_x = u_y;
 		double v_y = -u_x;
 
@@ -364,9 +359,25 @@ public class DrawingPanel extends JPanel {
 		double c_x = x2 - u_x * tip_length;
 		double c_y = y2 - u_y * tip_length;
 
-		g2.setStroke(new BasicStroke(3));
-		g2.draw(new Line2D.Double(c_x + v_x, c_y + v_y, x2, y2));
-		g2.draw(new Line2D.Double(c_x - v_x, c_y - v_y, x2, y2));
+		System.out.println("x2 " + x2);
+		System.out.println("y2 " + y2);
+		
+		System.out.println(startX);
+		System.out.println(startY);
+		
+		System.out.println("windows Width " + windowsWidth);
+		System.out.println("windows Height " + windowsHeight);
+		
+		if(x1 > startX && x1 < windowsWidth - startX) {
+			if(y1 > startY && y1 < windowsHeight - startY) {
+				
+				g2.draw(new Line2D.Double(x1, y1, x2, y2));
+				g2.setStroke(new BasicStroke(3));
+				g2.draw(new Line2D.Double(c_x + v_x, c_y + v_y, x2, y2));
+				g2.draw(new Line2D.Double(c_x - v_x, c_y - v_y, x2, y2));
+			}
+		}
+		
 	}
 
 	/**
@@ -440,25 +451,21 @@ public class DrawingPanel extends JPanel {
 
 		int sourPopisXInt = (int) sourPopisX;
 		int sourPopisYInt = (int) sourPopisY;
-
+		
+		
 		
 		if(delka <= windowsWidth - 2*(startX)) {
-//			while(sourPopisX < startX) {
-//				sourPopisXInt++;
-//			}
-//			while(sourPopisX + delka > windowsWidth - startX) {
-//				sourPopisXInt--;
-//			}
+			while(sourPopisXInt <= startX) {
+				
+				sourPopisXInt += 1;
+			}
+			while(sourPopisXInt + delka > windowsWidth - startX) {
+				sourPopisXInt -= 1;
+			}
+			
 			g2.drawString(nadpis, sourPopisXInt, sourPopisYInt);
+			
 		}
-		
-		
-//		if (sourPopisX > startX && sourPopisX + delka < windowsWidth - startX) {
-//			if (sourPopisY > startY && sourPopisY + vyska < windowsHeight - startY) {
-//				
-//			}
-//
-//		}
 
 	}
 
