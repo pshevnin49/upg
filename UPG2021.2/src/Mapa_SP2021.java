@@ -24,6 +24,8 @@ public class Mapa_SP2021 {
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);//prida komponentu
 		
+		
+		
 		okno.pack(); // prepocte velikost okna
 
 		okno.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
