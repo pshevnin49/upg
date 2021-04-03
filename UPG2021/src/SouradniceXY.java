@@ -1,4 +1,6 @@
 
+
+
 public class SouradniceXY {
 	static int x = 0;
 	static int y = 0;
@@ -12,7 +14,7 @@ public class SouradniceXY {
 		return x;
 	}
 	
-	public int getY() {
+	public  int getY() {
 		return y;
 	}
 }
