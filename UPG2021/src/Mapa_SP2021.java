@@ -13,18 +13,20 @@ import javax.swing.JFrame;
 
 
 public class Mapa_SP2021 {
-
+	/**
+	 * Metoda main, tvori instance tridy JPanel, a instance tridy DrawingPanel
+	 * @param args
+	 * @throws FileNotFoundException
+	 */
 	public static void main(String[] args) throws FileNotFoundException {
 
 		JFrame okno = new JFrame();
-
+		
 		okno.setTitle("Pavel Shevnin A20B0231P");
 		okno.setSize(620, 480);
 		
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);//prida komponentu
-		
-		
 		
 		okno.pack(); // prepocte velikost okna
 

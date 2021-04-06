@@ -1,5 +1,4 @@
 
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,17 +22,75 @@ public class DrawingPanel extends JPanel {
 	private BufferedImage bg_img = nacteniPGM("data\\data_plzen.pgm");
 	private BufferedImage image;
 	public static int[] data;
-	
-	private int windowsWidth = 1000;
-	private int windowsHeight = 1000;
+
+	private int windowsWidth = 0;
+	private int windowsHeight = 0;
 
 	public DrawingPanel() throws FileNotFoundException {
-		this.setPreferredSize(new Dimension(800, 800));
+		this.setPreferredSize(new Dimension(800, 600));
 
 	}
 
 	/**
-	 * Prizpusobuje PGM data do RGB;
+	 * Metoda prijima jmeno souboru, a nacita pgm p2 data. Zpracovava data a vrati
+	 * BufferedImage
+	 * 
+	 * @param jmenoSouboru
+	 * @return img // obrazek BufferedImage
+	 * @throws FileNotFoundException
+	 */
+	public static BufferedImage nacteniPGM(String jmenoSouboru) throws FileNotFoundException {
+		FileReader read = new FileReader(jmenoSouboru);
+		Scanner scn = new Scanner(read);
+		int maxColor;
+		int width = 0;
+		int height = 0;
+		scn.nextLine();
+		String line = scn.nextLine();
+		if (line.startsWith("#")) {
+			while (line.startsWith("#")) {
+				line = scn.nextLine();
+			}
+			Scanner l = new Scanner(line);
+			width = l.nextInt();
+			height = l.nextInt();
+			maxColor = scn.nextInt();
+
+		} else {
+			Scanner l = new Scanner(line);
+			width = l.nextInt();
+			height = l.nextInt();
+			maxColor = scn.nextInt();
+		}
+
+		int[] pixels = new int[width * height];
+
+		for (int i = 0; i < pixels.length; i++) {
+			if (maxColor > 255) {
+				double koef = maxColor / 255;
+				koef++;
+
+				int color = (int) (scn.nextInt() / koef);
+				pixels[i] = color;
+			} else if (maxColor < 255) {
+				double koef = 255 / maxColor;
+				koef++;
+				int color = (int) (scn.nextInt() * koef);
+				pixels[i] = color;
+			} else {
+				pixels[i] = scn.nextInt();
+			}
+		}
+
+		data = pixels;
+		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		img.setRGB(0, 0, width, height, pixels, 0, width);
+		return img;
+	}
+
+	/**
+	 * Metoda processImage() prizpusobuje PGM data nactene ze souboru, do
+	 * cernobileho obrazku.
 	 */
 	private void processImage() {
 		int iW = bg_img.getWidth();
@@ -64,12 +121,15 @@ public class DrawingPanel extends JPanel {
 		image.setRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely z arraje
 	}
 
+	/**
+	 * Metoda prepsana z JPanel, vyvolava metodu drawPlzenImage
+	 */
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2 = (Graphics2D) g;
-
 		processImage();
+
 		try {
 			drawPlzenImage(g2, this.getWidth(), this.getHeight());
 		} catch (FileNotFoundException e) {
@@ -77,11 +137,18 @@ public class DrawingPanel extends JPanel {
 			e.printStackTrace();
 		}
 
-		windowsWidth = this.getWidth();
-		windowsHeight = this.getHeight();
-
 	}
 
+	/**
+	 * Metoda vykresluje obrazek v centru okna, a vyvolava metody vykreslujici sibky
+	 * a nadpisy v souradnicih maximallnihi a minimalniho prevyseni, a maximalniho
+	 * sloupani
+	 * 
+	 * @param g2 Graphics2D
+	 * @param W  sirka
+	 * @param H  vyska
+	 * @throws FileNotFoundException
+	 */
 	public void drawPlzenImage(Graphics2D g2, int W, int H) throws FileNotFoundException {
 
 		g2.setColor(Color.BLACK);
@@ -126,6 +193,9 @@ public class DrawingPanel extends JPanel {
 
 		g2.setRenderingHints(aliasing);
 
+		windowsWidth = this.getWidth();
+		windowsHeight = this.getHeight();
+
 		drawArrow(maxSloupaniX, maxSloupaniY, g2, scale, startX, startY);
 		drawDesc(maxSloupaniX, maxSloupaniY, "Max. sloupani", g2, scale, startX, startY);
 
@@ -133,65 +203,16 @@ public class DrawingPanel extends JPanel {
 		drawDesc(maxPrevyseniX, maxPrevyseniY, "Max. prevyseni", g2, scale, startX, startY);
 
 		drawArrow(minPrevyseniX, minPrevyseniY, g2, scale, startX, startY);
-		drawDesc(minPrevyseniX, minPrevyseniY, "Max. prevyseni", g2, scale, startX, startY);
-		
-		
-	}
+		drawDesc(minPrevyseniX, minPrevyseniY, "Min. prevyseni", g2, scale, startX, startY);
 
-	public static BufferedImage nacteniPGM(String jmenoSouboru) throws FileNotFoundException {
-		FileReader read = new FileReader(jmenoSouboru);
-		Scanner scn = new Scanner(read);
-		int maxColor;
-		int width = 0;
-		int height = 0;
-		scn.nextLine();
-		String line = scn.nextLine();
-		if (line.startsWith("#")) {
-			while (line.startsWith("#")) {
-				line = scn.nextLine();
-			}
-			Scanner l = new Scanner(line);
-			width = l.nextInt();
-			height = l.nextInt();
-			maxColor = scn.nextInt();
-		} else {
-			Scanner l = new Scanner(line);
-			width = l.nextInt();
-			height = l.nextInt();
-			maxColor = scn.nextInt();
-		}
-
-		int[] pixels = new int[width * height];
-
-		for (int i = 0; i < pixels.length; i++) {
-			if (maxColor > 255) {
-				double koef = maxColor / 255;
-				koef++;
-
-				int color = (int) (scn.nextInt() / koef);
-				pixels[i] = color;
-			} else if (maxColor < 255) {
-				double koef = 255 / maxColor;
-				koef++;
-				int color = (int) (scn.nextInt() * koef);
-				pixels[i] = color;
-			} else {
-				pixels[i] = scn.nextInt();
-			}
-		}
-
-		data = pixels;
-		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-		img.setRGB(0, 0, width, height, pixels, 0, width);
-		return img;
 	}
 
 	/**
 	 * Method maxSloupani prijima pixels[][], hleda bod maximalniho sloupani a vrati
 	 * objekt SouradniceXY maximalniho sloupani
 	 * 
-	 * @param pixels
-	 * @return
+	 * @param pixels pole dat obrazku
+	 * @return maxSloupaniXY souradnice maximalniho sloupani
 	 */
 	public static SouradniceXY maxSloupani(int pixels[][]) {
 		int maxSloupani = 0;
@@ -238,8 +259,8 @@ public class DrawingPanel extends JPanel {
 	 * Method maxVyska prijima pixels[][], hleda bod maximalniho prevyseni a vrati
 	 * objekt SouradniceXY souradnice maximalniho prevyseni
 	 * 
-	 * @param pixels
-	 * @return
+	 * @param pixels pole datmapy
+	 * @return maxVyskaXY souradnice maximalni vyski
 	 */
 	public static SouradniceXY maxPrevyseni(int pixels[][]) {
 		int maxVyska = 0;
@@ -290,11 +311,10 @@ public class DrawingPanel extends JPanel {
 	}
 
 	/**
-	 * Metoda nacita data z libovolneho pgm (p2) souboru
+	 * Metoda prijima jednorozmerne pole, zpracovava a vrati dvourozmerne pole
 	 * 
-	 * @param jmenoSouboru
-	 * @return pixels array dat ze souboru
-	 * @throws FileNotFoundException
+	 * @param data []
+	 * @return pixels[][]
 	 */
 
 	public int[][] arrayToDoubleArray(int[] data) {
@@ -318,6 +338,8 @@ public class DrawingPanel extends JPanel {
 	}
 
 	/**
+	 * Metoda prijima souradnice bodu, vyvolava metodu vypocetSouradniceX1Y1, a v
+	 * pripade, kdyz bod zacatku sibky se nachazi na obrazku, vykresluje sibku
 	 * 
 	 * @param x2
 	 * @param y2
@@ -327,10 +349,7 @@ public class DrawingPanel extends JPanel {
 	 * @param startY
 	 */
 	private void drawArrow(int x2, int y2, Graphics2D g2, double scale, int startX, int startY) {
-		
-		
-		
-		
+
 		x2 = (int) ((x2 * scale) + startX);
 		y2 = (int) ((y2 * scale) + startY);
 
@@ -361,38 +380,40 @@ public class DrawingPanel extends JPanel {
 
 		System.out.println("x2 " + x2);
 		System.out.println("y2 " + y2);
-		
+
 		System.out.println(startX);
 		System.out.println(startY);
-		
-		System.out.println("windows Width " + windowsWidth);
-		System.out.println("windows Height " + windowsHeight);
-		
-		if(x1 > startX && x1 < windowsWidth - startX) {
-			if(y1 > startY && y1 < windowsHeight - startY) {
-				
+
+		System.out.println("windows Width " + (windowsWidth - startX));
+		System.out.println("windows Height " + (windowsHeight - startY));
+		System.out.println("windows Width " + (windowsWidth));
+		System.out.println("windows Height " + (windowsHeight));
+		System.out.println("x1 " + x1);
+		System.out.println("y1 " + y1);
+
+		if (x1 > startX && x1 < windowsWidth - startX) {
+			if (y1 > startY && y1 < windowsHeight - startY) {
+
 				g2.draw(new Line2D.Double(x1, y1, x2, y2));
 				g2.setStroke(new BasicStroke(3));
 				g2.draw(new Line2D.Double(c_x + v_x, c_y + v_y, x2, y2));
 				g2.draw(new Line2D.Double(c_x - v_x, c_y - v_y, x2, y2));
+
 			}
 		}
-		
+
 	}
 
 	/**
-	 * Metoda priima vsichni souradnice sibky, a spocita spravne souradnice pro
-	 * nadpis
+	 * Metoda vypisuje nadpis na obrazek
 	 * 
-	 * @param x1           zacatek sibky X
-	 * @param y1           zacatek sibky Y
-	 * @param x2           konec sibky X
-	 * @param y2           konec sibky Y
-	 * @param nadpis       String co bude napsano
-	 * @param g2           Graphics2D
-	 * @param startY
-	 * @param startX
-	 * @param velkostFontu velikost fontu
+	 * @param x2     souradnice X konce sibky
+	 * @param y2     souradnice Y konce sibky
+	 * @param nadpis Text, ktery bude vypsan
+	 * @param g2     Graphics2D g2
+	 * @param scale  Scalovani obrazku
+	 * @param startX Posuv obrazku
+	 * @param startY Posuv obrazku
 	 */
 	private void drawDesc(int x2, int y2, String nadpis, Graphics2D g2, double scale, int startX, int startY) {
 
@@ -406,7 +427,7 @@ public class DrawingPanel extends JPanel {
 
 		double velkostFontu = 15;
 		g2.setColor(Color.BLACK);
-		Font font = new Font("Calibri", Font.PLAIN, (int) velkostFontu);
+		Font font = new Font("Times new roman", Font.PLAIN, (int) velkostFontu);
 		g2.setFont(font);
 
 		FontMetrics fm = g2.getFontMetrics();
@@ -451,31 +472,29 @@ public class DrawingPanel extends JPanel {
 
 		int sourPopisXInt = (int) sourPopisX;
 		int sourPopisYInt = (int) sourPopisY;
-		
-		
-		
-		if(delka <= windowsWidth - 2*(startX)) {
-			while(sourPopisXInt <= startX) {
-				
-				sourPopisXInt += 1;
+
+		if (sourPopisYInt > startY && sourPopisY < windowsHeight - startY) {
+			if (delka < (windowsWidth - 2 * (startX))) {
+				while (sourPopisXInt <= startX) {
+
+					sourPopisXInt += 1;
+				}
+				while (sourPopisXInt + delka > windowsWidth - startX) {
+					sourPopisXInt -= 1;
+				}
+				g2.drawString(nadpis, sourPopisXInt, sourPopisYInt);
+
 			}
-			while(sourPopisXInt + delka > windowsWidth - startX) {
-				sourPopisXInt -= 1;
-			}
-			
-			g2.drawString(nadpis, sourPopisXInt, sourPopisYInt);
-			
 		}
 
 	}
 
 	/**
-	 * Methoda spočitá souřadníce X a Y začatku šibký a vratí objekt
-	 * SouradniceXY
+	 * Metoda prijima souradnice bodu, a spocita souradnice zacutku sibky.
 	 * 
-	 * @param x2
-	 * @param y2
-	 * @return
+	 * @param x2 souradnice X konce sibky
+	 * @param y2 souradnice Y konce sibky
+	 * @return vypoceSouradniceXY
 	 */
 	private SouradniceXY vypocetSouradniceX1Y1(int x2, int y2, int startX, int startY, double scale) {
 
