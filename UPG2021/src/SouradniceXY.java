@@ -1,7 +1,7 @@
 
 public class SouradniceXY {
-	static int x = 0;
-	static int y = 0;
+	private static int x = 0;
+	private static int y = 0;
 	
 	/**
 	 * Konstruktor tridy SouradniceXY

@@ -21,7 +21,7 @@ public class DrawingPanel extends JPanel {
 
 	private BufferedImage bg_img = nacteniPGM("data\\data_plzen.pgm");
 	private BufferedImage image;
-	public static int[] data;
+	private static int[] data;
 
 	private int windowsWidth = 0;
 	private int windowsHeight = 0;
@@ -377,19 +377,6 @@ public class DrawingPanel extends JPanel {
 
 		double c_x = x2 - u_x * tip_length;
 		double c_y = y2 - u_y * tip_length;
-
-		System.out.println("x2 " + x2);
-		System.out.println("y2 " + y2);
-
-		System.out.println(startX);
-		System.out.println(startY);
-
-		System.out.println("windows Width " + (windowsWidth - startX));
-		System.out.println("windows Height " + (windowsHeight - startY));
-		System.out.println("windows Width " + (windowsWidth));
-		System.out.println("windows Height " + (windowsHeight));
-		System.out.println("x1 " + x1);
-		System.out.println("y1 " + y1);
 
 		if (x1 > startX && x1 < windowsWidth - startX) {
 			if (y1 > startY && y1 < windowsHeight - startY) {
