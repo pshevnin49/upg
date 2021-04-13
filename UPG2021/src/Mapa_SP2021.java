@@ -18,15 +18,20 @@ public class Mapa_SP2021 {
 	 * @param args
 	 * @throws FileNotFoundException
 	 */
+	
+	
 	public static void main(String[] args) throws FileNotFoundException {
 
 		JFrame okno = new JFrame();
+		
+		
 		
 		okno.setTitle("Pavel Shevnin A20B0231P");
 		okno.setSize(620, 480);
 		
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);//prida komponentu
+		nacteniPGM(args[0], panel);
 		
 		okno.pack(); // prepocte velikost okna
 
@@ -34,6 +39,63 @@ public class Mapa_SP2021 {
 		okno.setLocationRelativeTo(null);// posice okna centrum
 		okno.setVisible(true);
 
+	}
+	
+	/**
+	 * Metoda prijima jmeno souboru, a nacita pgm p2 data. Zpracovava data a vrati
+	 * BufferedImage
+	 * 
+	 * @param jmenoSouboru
+	 * @return img // obrazek BufferedImage
+	 * @throws FileNotFoundException
+	 */
+	public static void nacteniPGM(String jmenoSouboru, DrawingPanel panel) throws FileNotFoundException {
+		FileReader read = new FileReader(jmenoSouboru);
+		Scanner scn = new Scanner(read);
+		int maxColor;
+		int width = 0;
+		int height = 0;
+		scn.nextLine();
+		String line = scn.nextLine();
+		if (line.startsWith("#")) {
+			while (line.startsWith("#")) {
+				line = scn.nextLine();
+			}
+			Scanner l = new Scanner(line);
+			width = l.nextInt();
+			height = l.nextInt();
+			maxColor = scn.nextInt();
+
+		} else {
+			Scanner l = new Scanner(line);
+			width = l.nextInt();
+			height = l.nextInt();
+			maxColor = scn.nextInt();
+		}
+
+		int[] pixels = new int[width * height];
+
+		for (int i = 0; i < pixels.length; i++) {
+			if (maxColor > 255) {
+				double koef = maxColor / 255;
+				koef++;
+
+				int color = (int) (scn.nextInt() / koef);
+				pixels[i] = color;
+			} else if (maxColor < 255) {
+				double koef = 255 / maxColor;
+				koef++;
+				int color = (int) (scn.nextInt() * koef);
+				pixels[i] = color;
+			} else {
+				pixels[i] = scn.nextInt();
+			}
+		}
+
+		panel.setData(pixels);
+		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		img.setRGB(0, 0, width, height, pixels, 0, width);
+		panel.setImage(img);
 	}
 
 	
