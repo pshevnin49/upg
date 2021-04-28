@@ -24,14 +24,13 @@ public class Mapa_SP2021 {
 
 		JFrame okno = new JFrame();
 		
-		
-		
 		okno.setTitle("Pavel Shevnin A20B0231P");
 		okno.setSize(620, 480);
 		
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);//prida komponentu
-		nacteniPGM(args[0], panel);
+		//nacteniPGM(args[0], panel);
+		nacteniPGM("data\\data_plzen.pgm", panel);
 		
 		okno.pack(); // prepocte velikost okna
 
@@ -91,7 +90,8 @@ public class Mapa_SP2021 {
 				pixels[i] = scn.nextInt();
 			}
 		}
-
+		
+		panel.setMaxHodnota(maxColor);
 		panel.setData(pixels);
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 		img.setRGB(0, 0, width, height, pixels, 0, width);

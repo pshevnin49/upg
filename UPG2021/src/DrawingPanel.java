@@ -13,6 +13,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Random;
 import java.util.Scanner;
 
 import javax.swing.JPanel;
@@ -22,6 +23,7 @@ public class DrawingPanel extends JPanel {
 	private BufferedImage bg_img;
 	private BufferedImage image;
 	private int[] data;
+	private int maxHodnota = 0;
 
 	private int windowsWidth = 0;
 	private int windowsHeight = 0;
@@ -30,10 +32,17 @@ public class DrawingPanel extends JPanel {
 		this.setPreferredSize(new Dimension(800, 600));
 
 	}
-	
+	/**
+	 * Nastavuje bg_img z mainu
+	 * @param bg_img
+	 */
 	public void setImage(BufferedImage bg_img) {
 		this.bg_img = bg_img;
 	}
+	/**
+	 * Nastavuje data[] z mainu
+	 * @param data
+	 */
 	public void setData(int[] data) {
 		this.data = data;
 	}
@@ -46,30 +55,112 @@ public class DrawingPanel extends JPanel {
 	private void processImage() {
 		int iW = bg_img.getWidth();
 		int iH = bg_img.getHeight();
+		
+		double krokVysky = (255.0 / maxHodnota) * 50; 
+		int pocetBarev = maxHodnota / 50;
+		
 		this.image = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);
 
 		int[] pixels = new int[iW * iH];
-
+		Color[] colors = new Color[iW * iH];
+		Color[] poleBarev = getBarvy(pocetBarev);
+		
 		bg_img.getRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely do arraje
-
+		
+		
 		for (int i = 0; i < pixels.length; i++) {
 			int in_rgb = pixels[i];
-
+			
 			int b = in_rgb;
 			int g = in_rgb;
 			int r = in_rgb;
 
 			int gr = (1 * b + 3 * r + 6 * g) / 10;
-
+			
 			b = gr;
 			g = gr;
 			r = gr;
-
+			
 			int out_rgb = (r << 16) | (g << 8) | b;
+			
+			Color out = new Color(out_rgb);
+			
+			int grColor = out.getBlue();
+			
+			if(out.getBlue() == 0) {
+				out = new Color(33, 72, 145);
+				out_rgb = out.getRGB();
+			}
+			
+			if( 1 < out.getBlue() && out.getBlue() <= krokVysky) {
+				out = new Color(144, 238, 144);
+				out_rgb = out.getRGB();
+			}
+			
+			if(krokVysky < out.getBlue() && out.getBlue() <= krokVysky*2) {
+				out = new Color(35, 179, 81);
+				out_rgb = out.getRGB();
+			}
+			
+			if( krokVysky < out.getBlue() && out.getBlue() <= krokVysky*2) {
+				out = new Color(35, 179, 81);
+				out_rgb = out.getRGB();
+			}
+			
+			if( krokVysky*2 < out.getBlue() && out.getBlue() <= krokVysky*3) {
+				out = new Color(16, 92, 39);
+				out_rgb = out.getRGB();
+			}
+			
+			if( krokVysky*3 < out.getBlue() && out.getBlue() < krokVysky*4) {
+				out = new Color(100, 22, 0);
+				out_rgb = out.getRGB();
+			}
+			if( krokVysky*4 < out.getBlue() && out.getBlue() < krokVysky*5) {
+				out = new Color(255, 255, 255);
+				out_rgb = out.getRGB();
+			}
+			if( krokVysky*5 < out.getBlue() && out.getBlue() < krokVysky*6) {
+				out = new Color(16, 92, 39);
+				out_rgb = out.getRGB();
+			}
+			if( krokVysky*6 < out.getBlue() && out.getBlue() < krokVysky*7) {
+				out = new Color(169, 125, 40);
+				out_rgb = out.getRGB();
+			}
+			
+			if( krokVysky*7 < out.getBlue() && out.getBlue() < krokVysky*8) {
+				out = new Color(100, 64, 15);
+				out_rgb = out.getRGB();
+			}
+			if( krokVysky*9 < out.getBlue() && out.getBlue() < krokVysky*10) {
+				out = new Color(77, 34, 14);
+				out_rgb = out.getRGB();
+			}
+			if( krokVysky*10 < out.getBlue() && out.getBlue() < krokVysky*11) {
+				out = new Color(95, 30, 10);
+				out_rgb = out.getRGB();
+			}
 			pixels[i] = out_rgb;
+			
+			
 
 		}
+		
 		image.setRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely z arraje
+		
+		
+	}
+	
+	private Color[] getBarvy(int pocetBarev){
+		Random rand = new Random();
+		Color[] poleBarev = new Color[pocetBarev];
+		
+		for (int i = 0; i < pocetBarev; i++) {
+			Color color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
+			poleBarev[i] = color;
+		}
+		return poleBarev;
 	}
 
 	/**
@@ -135,6 +226,7 @@ public class DrawingPanel extends JPanel {
 
 		RenderingHints rh = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
 				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		
 		RenderingHints aliasing = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -426,6 +518,8 @@ public class DrawingPanel extends JPanel {
 		}
 
 	}
+	
+	
 
 	/**
 	 * Metoda prijima souradnice bodu, a spocita souradnice zacutku sibky.
@@ -480,6 +574,9 @@ public class DrawingPanel extends JPanel {
 
 		SouradniceXY vypoceSouradniceXY = new SouradniceXY((int) x1, (int) y1);
 		return vypoceSouradniceXY;
+	}
+	public void setMaxHodnota(int maxHodnota) {
+		this.maxHodnota = maxHodnota;
 	}
 
 }
