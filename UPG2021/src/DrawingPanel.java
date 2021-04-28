@@ -24,6 +24,8 @@ public class DrawingPanel extends JPanel {
 	private BufferedImage image;
 	private int[] data;
 	private int maxHodnota = 0;
+	double krokVysky = 0;
+	Color[] poleBarev;
 
 	private int windowsWidth = 0;
 	private int windowsHeight = 0;
@@ -56,14 +58,15 @@ public class DrawingPanel extends JPanel {
 		int iW = bg_img.getWidth();
 		int iH = bg_img.getHeight();
 		
-		double krokVysky = (255.0 / maxHodnota) * 50; 
+		
 		int pocetBarev = maxHodnota / 50;
 		
 		this.image = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);
 
 		int[] pixels = new int[iW * iH];
 		Color[] colors = new Color[iW * iH];
-		Color[] poleBarev = getBarvy(pocetBarev);
+		
+		
 		
 		bg_img.getRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely do arraje
 		
@@ -87,60 +90,27 @@ public class DrawingPanel extends JPanel {
 			
 			int grColor = out.getBlue();
 			
-			if(out.getBlue() == 0) {
-				out = new Color(33, 72, 145);
-				out_rgb = out.getRGB();
-			}
+			int koef = 0;
 			
-			if( 1 < out.getBlue() && out.getBlue() <= krokVysky) {
-				out = new Color(144, 238, 144);
-				out_rgb = out.getRGB();
+			for(int k = 0; k < 255; k += krokVysky) {
+				double k1 = k - krokVysky;
+				if(k1 + 1 <= grColor && grColor <= k) {
+					out_rgb = poleBarev[koef].getRGB();
+				}
+//				if(grColor >= k && grColor <= k + 5 ) {
+//					out_rgb = new Color(0, 0, 0).getRGB();
+//				}
+				koef++;
 			}
+//			for(int k = 0; k < 255; k += krokVysky) {
+//				
+//				if(grColor >= k && grColor <= k + 5 ) {
+//					out_rgb = new Color(0, 0, 0).getRGB();
+//				}
+//			}
+				
 			
-			if(krokVysky < out.getBlue() && out.getBlue() <= krokVysky*2) {
-				out = new Color(35, 179, 81);
-				out_rgb = out.getRGB();
-			}
 			
-			if( krokVysky < out.getBlue() && out.getBlue() <= krokVysky*2) {
-				out = new Color(35, 179, 81);
-				out_rgb = out.getRGB();
-			}
-			
-			if( krokVysky*2 < out.getBlue() && out.getBlue() <= krokVysky*3) {
-				out = new Color(16, 92, 39);
-				out_rgb = out.getRGB();
-			}
-			
-			if( krokVysky*3 < out.getBlue() && out.getBlue() < krokVysky*4) {
-				out = new Color(100, 22, 0);
-				out_rgb = out.getRGB();
-			}
-			if( krokVysky*4 < out.getBlue() && out.getBlue() < krokVysky*5) {
-				out = new Color(255, 255, 255);
-				out_rgb = out.getRGB();
-			}
-			if( krokVysky*5 < out.getBlue() && out.getBlue() < krokVysky*6) {
-				out = new Color(16, 92, 39);
-				out_rgb = out.getRGB();
-			}
-			if( krokVysky*6 < out.getBlue() && out.getBlue() < krokVysky*7) {
-				out = new Color(169, 125, 40);
-				out_rgb = out.getRGB();
-			}
-			
-			if( krokVysky*7 < out.getBlue() && out.getBlue() < krokVysky*8) {
-				out = new Color(100, 64, 15);
-				out_rgb = out.getRGB();
-			}
-			if( krokVysky*9 < out.getBlue() && out.getBlue() < krokVysky*10) {
-				out = new Color(77, 34, 14);
-				out_rgb = out.getRGB();
-			}
-			if( krokVysky*10 < out.getBlue() && out.getBlue() < krokVysky*11) {
-				out = new Color(95, 30, 10);
-				out_rgb = out.getRGB();
-			}
 			pixels[i] = out_rgb;
 			
 			
@@ -152,7 +122,7 @@ public class DrawingPanel extends JPanel {
 		
 	}
 	
-	private Color[] getBarvy(int pocetBarev){
+	public Color[] getBarvy(int pocetBarev){
 		Random rand = new Random();
 		Color[] poleBarev = new Color[pocetBarev];
 		
@@ -231,7 +201,7 @@ public class DrawingPanel extends JPanel {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
 		g2.setRenderingHints(rh);
-
+		
 		g2.drawImage(image, startX, startY, niW, niH, null);
 
 		g2.setRenderingHints(aliasing);
@@ -575,8 +545,18 @@ public class DrawingPanel extends JPanel {
 		SouradniceXY vypoceSouradniceXY = new SouradniceXY((int) x1, (int) y1);
 		return vypoceSouradniceXY;
 	}
+	
 	public void setMaxHodnota(int maxHodnota) {
 		this.maxHodnota = maxHodnota;
 	}
+	
+	public void setKrokVysky(double krokVysky) {
+		this.krokVysky = krokVysky;
+	}
+	
+	public void setPoleBarev(Color[]poleBarev) {
+		this.poleBarev = poleBarev;
+	};
+	
 
 }

@@ -91,7 +91,10 @@ public class Mapa_SP2021 {
 			}
 		}
 		
+		
 		panel.setMaxHodnota(maxColor);
+		panel.setKrokVysky((255.0 / maxColor) * 50);
+		panel.setPoleBarev(panel.getBarvy(maxColor));
 		panel.setData(pixels);
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 		img.setRGB(0, 0, width, height, pixels, 0, width);
