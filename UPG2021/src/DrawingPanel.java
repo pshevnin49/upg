@@ -97,30 +97,18 @@ public class DrawingPanel extends JPanel {
 				if(k1 + 1 <= grColor && grColor <= k) {
 					out_rgb = poleBarev[koef].getRGB();
 				}
-//				if(grColor >= k && grColor <= k + 5 ) {
-//					out_rgb = new Color(0, 0, 0).getRGB();
-//				}
+
 				koef++;
 			}
-//			for(int k = 0; k < 255; k += krokVysky) {
-//				
-//				if(grColor >= k && grColor <= k + 5 ) {
-//					out_rgb = new Color(0, 0, 0).getRGB();
-//				}
-//			}
-				
-			
-			
 			pixels[i] = out_rgb;
 			
 			
-
 		}
-		
 		image.setRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely z arraje
 		
-		
 	}
+	
+	
 	
 	public Color[] getBarvy(int pocetBarev){
 		Random rand = new Random();
@@ -133,6 +121,73 @@ public class DrawingPanel extends JPanel {
 		return poleBarev;
 	}
 
+	private BufferedImage vrstevnice (BufferedImage image) {
+		int iW = image.getWidth();
+		int iH = image.getHeight();
+		
+		int[] pixels = new int [iW * iH];
+		image.getRGB(0, 0, iW, iH, pixels, 0, iW);
+		int dataVysek [][] = arrayToDoubleArray(data);
+		int doublePixels[][] = arrayToDoubleArray(pixels);
+		for (int a = 0; a < iW; a++) {//
+			for (int b = 0; b < iH; b++) {
+				try {
+					
+					Color color = new Color(153, 204, 255);
+					int colorRGB = color.getRGB();
+					int indexBarvyPixel = indexBarvyVysky(dataVysek [a][b]);
+					int indexBarvySoused1 = indexBarvyVysky(dataVysek [a + 1][b]);
+					int indexBarvySoused2 = indexBarvyVysky(dataVysek [a - 1][b]);
+					int indexBarvySoused3 = indexBarvyVysky(dataVysek [a][b + 1]);
+					int indexBarvySoused4 = indexBarvyVysky(dataVysek [a][b - 1]);
+					
+					if(indexBarvyPixel > indexBarvySoused1 ) {
+						doublePixels[a][b] = colorRGB;
+					}
+					else if(indexBarvyPixel > indexBarvySoused2 ) {
+						doublePixels[a][b] = colorRGB;
+					}
+					else if(indexBarvyPixel > indexBarvySoused3 ) {
+						doublePixels[a][b] = colorRGB;
+					}
+					else if(indexBarvyPixel > indexBarvySoused4 ) {
+						doublePixels[a][b] = colorRGB;
+					}
+					
+					
+				} catch (IndexOutOfBoundsException e) {
+
+				}
+
+			}
+		}
+		pixels = doubleArrayToArray(doublePixels);
+		image.setRGB(0, 0, iW, iH, pixels, 0, iW);
+		return image;
+		
+		
+		
+	}
+	
+	
+	/**
+	 * Metoda prijima vysku a vrati koeficient barvy kterou tato vyska musi byta zabarvena
+	 * @param vyska
+	 * @return
+	 */
+	public int indexBarvyVysky(int vyska) {
+		int index = 0;
+		for(int i = 0; i < 255 ; i += krokVysky) {
+			double i1 = i - krokVysky;
+			if(i1  <= vyska && vyska <= i) {
+				return index;
+			}
+			index++;
+		}
+		return index;
+	}
+	
+	
 	/**
 	 * Metoda prepsana z JPanel, vyvolava metodu drawPlzenImage
 	 */
@@ -202,6 +257,7 @@ public class DrawingPanel extends JPanel {
 
 		g2.setRenderingHints(rh);
 		
+		image = vrstevnice(image);
 		g2.drawImage(image, startX, startY, niW, niH, null);
 
 		g2.setRenderingHints(aliasing);
@@ -341,6 +397,26 @@ public class DrawingPanel extends JPanel {
 		for (int a = 0; a < height; a++) {
 			for (int b = 0; b < width; b++) {
 				pixels[b][a] = data[index];
+
+				index++;
+
+			}
+		}
+
+		return pixels;
+	}
+	
+	public int[] doubleArrayToArray(int[][] data) {
+
+		int width = image.getWidth();
+		int height = image.getHeight();
+
+		int[] pixels = new int[width * height];
+
+		int index = 0;
+		for (int a = 0; a < height; a++) {
+			for (int b = 0; b < width; b++) {
+				pixels[index] = data[b][a];
 
 				index++;
 
