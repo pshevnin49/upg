@@ -13,6 +13,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -24,9 +26,11 @@ public class DrawingPanel extends JPanel {
 	private BufferedImage image;
 	private int[] data;
 	private int maxHodnota = 0;
+	private int pocetBarev = 0;
 	double krokVysky = 0;
 	Color[] poleBarev;
 
+	List<SouradniceXY>[] poleSouradnicVrst;
 	private int windowsWidth = 0;
 	private int windowsHeight = 0;
 
@@ -92,9 +96,9 @@ public class DrawingPanel extends JPanel {
 			
 			int koef = 0;
 			
-			for(int k = 0; k < 255; k += krokVysky) {
+			for(double k = 0; k < 255; k += krokVysky) {
 				double k1 = k - krokVysky;
-				if(k1 + 1 <= grColor && grColor <= k) {
+				if(k1 <= grColor && grColor <= k) {
 					out_rgb = poleBarev[koef].getRGB();
 				}
 
@@ -129,6 +133,8 @@ public class DrawingPanel extends JPanel {
 		image.getRGB(0, 0, iW, iH, pixels, 0, iW);
 		int dataVysek [][] = arrayToDoubleArray(data);
 		int doublePixels[][] = arrayToDoubleArray(pixels);
+		
+		
 		for (int a = 0; a < iW; a++) {//
 			for (int b = 0; b < iH; b++) {
 				try {
@@ -136,6 +142,7 @@ public class DrawingPanel extends JPanel {
 					Color color = new Color(153, 204, 255);
 					int colorRGB = color.getRGB();
 					int indexBarvyPixel = indexBarvyVysky(dataVysek [a][b]);
+					SouradniceXY souradniceVrstevnice = new SouradniceXY(a, b);
 					int indexBarvySoused1 = indexBarvyVysky(dataVysek [a + 1][b]);
 					int indexBarvySoused2 = indexBarvyVysky(dataVysek [a - 1][b]);
 					int indexBarvySoused3 = indexBarvyVysky(dataVysek [a][b + 1]);
@@ -143,15 +150,19 @@ public class DrawingPanel extends JPanel {
 					
 					if(indexBarvyPixel > indexBarvySoused1 ) {
 						doublePixels[a][b] = colorRGB;
+						//poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 					}
 					else if(indexBarvyPixel > indexBarvySoused2 ) {
 						doublePixels[a][b] = colorRGB;
+						//poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 					}
 					else if(indexBarvyPixel > indexBarvySoused3 ) {
 						doublePixels[a][b] = colorRGB;
+						//poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 					}
 					else if(indexBarvyPixel > indexBarvySoused4 ) {
 						doublePixels[a][b] = colorRGB;
+						//poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 					}
 					
 					
@@ -256,6 +267,8 @@ public class DrawingPanel extends JPanel {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
 		g2.setRenderingHints(rh);
+		
+		
 		
 		image = vrstevnice(image);
 		g2.drawImage(image, startX, startY, niW, niH, null);
@@ -632,7 +645,16 @@ public class DrawingPanel extends JPanel {
 	
 	public void setPoleBarev(Color[]poleBarev) {
 		this.poleBarev = poleBarev;
-	};
+	}
+	public void setPocetBarev(int pocetBarev) {
+		this.pocetBarev = pocetBarev;
+	}
+	
+	
+	public void poleSouradnicVrst(List<SouradniceXY>[] poleSouradnicVrst2) {
+		this.poleSouradnicVrst = poleSouradnicVrst2;
+		
+	}
 	
 
 }

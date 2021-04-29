@@ -92,10 +92,18 @@ public class Mapa_SP2021 {
 		}
 		
 		
+		
+		
+		double krokVysky = (255.0 / maxColor) * 50;
+		int pocetBarev = (int) (255/krokVysky);
 		panel.setMaxHodnota(maxColor);
-		panel.setKrokVysky((255.0 / maxColor) * 50);
-		panel.setPoleBarev(panel.getBarvy(maxColor));
+		panel.setKrokVysky(krokVysky);
+		panel.setPocetBarev(pocetBarev);
+		panel.setPoleBarev(panel.getBarvy(pocetBarev));
+		List<SouradniceXY>[] poleSouradnicVrst = new ArrayList[pocetBarev];
+		panel.poleSouradnicVrst(poleSouradnicVrst);
 		panel.setData(pixels);
+		
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 		img.setRGB(0, 0, width, height, pixels, 0, width);
 		panel.setImage(img);
