@@ -73,22 +73,27 @@ public class Mapa_SP2021 {
 		}
 
 		int[] pixels = new int[width * height];
+		int[] nezpracovanaData = new int [width * height];
 
 		for (int i = 0; i < pixels.length; i++) {
+			
+			int hodnota = scn.nextInt();
 			if (maxColor > 255) {
 				double koef = maxColor / 255;
 				koef++;
 
-				int color = (int) (scn.nextInt() / koef);
+				int color = (int) (hodnota / koef);
 				pixels[i] = color;
 			} else if (maxColor < 255) {
 				double koef = 255 / maxColor;
 				koef++;
-				int color = (int) (scn.nextInt() * koef);
+				int color = (int) (hodnota * koef);
 				pixels[i] = color;
 			} else {
-				pixels[i] = scn.nextInt();
+				pixels[i] = hodnota;
 			}
+			nezpracovanaData[i] = hodnota;
+			
 		}
 		
 		
@@ -100,9 +105,12 @@ public class Mapa_SP2021 {
 		panel.setKrokVysky(krokVysky);
 		panel.setPocetBarev(pocetBarev);
 		panel.setPoleBarev(panel.getBarvy(pocetBarev));
-		List<SouradniceXY>[] poleSouradnicVrst = new ArrayList[pocetBarev];
-		panel.poleSouradnicVrst(poleSouradnicVrst);
+		
+		
+		
+		
 		panel.setData(pixels);
+		panel.setNezpracovaneData(nezpracovanaData);
 		
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 		img.setRGB(0, 0, width, height, pixels, 0, width);

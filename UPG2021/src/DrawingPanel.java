@@ -7,6 +7,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -25,10 +27,19 @@ public class DrawingPanel extends JPanel {
 	private BufferedImage bg_img;
 	private BufferedImage image;
 	private int[] data;
+	private int[] nezpracovanaData;
+	
+	
 	private int maxHodnota = 0;
 	private int pocetBarev = 0;
 	double krokVysky = 0;
 	Color[] poleBarev;
+	private int startX;
+	private int startY;
+	
+	
+
+	private double scale;
 
 	List<SouradniceXY>[] poleSouradnicVrst;
 	private int windowsWidth = 0;
@@ -36,21 +47,48 @@ public class DrawingPanel extends JPanel {
 
 	public DrawingPanel() throws FileNotFoundException {
 		this.setPreferredSize(new Dimension(800, 600));
+		
+		this.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				int x = (int) ((e.getX() - startX)/scale);
+				int y = (int) ((e.getY() - startY)/scale);
+				
+				System.out.println("x = " + x + ", y = " + y);
+				System.out.println("vyska = " + getVyska(x, y));
+				
+				
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 
-	}
-	/**
-	 * Nastavuje bg_img z mainu
-	 * @param bg_img
-	 */
-	public void setImage(BufferedImage bg_img) {
-		this.bg_img = bg_img;
-	}
-	/**
-	 * Nastavuje data[] z mainu
-	 * @param data
-	 */
-	public void setData(int[] data) {
-		this.data = data;
 	}
 	
 
@@ -69,8 +107,6 @@ public class DrawingPanel extends JPanel {
 
 		int[] pixels = new int[iW * iH];
 		Color[] colors = new Color[iW * iH];
-		
-		
 		
 		bg_img.getRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely do arraje
 		
@@ -124,7 +160,12 @@ public class DrawingPanel extends JPanel {
 		}
 		return poleBarev;
 	}
-
+	/**
+	 * Metoda zabarvi vsichni pixely, ktere se nachazi mezi dvema vyskama v barvu vrstevnice, a vrati Image uz ze vrstevnicama.
+	 * Taky vklada souradnice vrstevnic pro kazdou barvu do vlastnihi arraje v pole
+	 * @param image
+	 * @return
+	 */
 	private BufferedImage vrstevnice (BufferedImage image) {
 		int iW = image.getWidth();
 		int iH = image.getHeight();
@@ -133,7 +174,12 @@ public class DrawingPanel extends JPanel {
 		image.getRGB(0, 0, iW, iH, pixels, 0, iW);
 		int dataVysek [][] = arrayToDoubleArray(data);
 		int doublePixels[][] = arrayToDoubleArray(pixels);
+		poleSouradnicVrst = new ArrayList[pocetBarev];
 		
+		for(int i = 0; i < pocetBarev; i++) {
+			List<SouradniceXY> list = new ArrayList<>();
+			poleSouradnicVrst[i] = list;
+		}
 		
 		for (int a = 0; a < iW; a++) {//
 			for (int b = 0; b < iH; b++) {
@@ -142,27 +188,32 @@ public class DrawingPanel extends JPanel {
 					Color color = new Color(153, 204, 255);
 					int colorRGB = color.getRGB();
 					int indexBarvyPixel = indexBarvyVysky(dataVysek [a][b]);
-					SouradniceXY souradniceVrstevnice = new SouradniceXY(a, b);
 					int indexBarvySoused1 = indexBarvyVysky(dataVysek [a + 1][b]);
 					int indexBarvySoused2 = indexBarvyVysky(dataVysek [a - 1][b]);
 					int indexBarvySoused3 = indexBarvyVysky(dataVysek [a][b + 1]);
 					int indexBarvySoused4 = indexBarvyVysky(dataVysek [a][b - 1]);
 					
+					
 					if(indexBarvyPixel > indexBarvySoused1 ) {
 						doublePixels[a][b] = colorRGB;
-						//poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
+						SouradniceXY souradniceVrstevnice = new SouradniceXY(a, b);
+						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
+						
 					}
 					else if(indexBarvyPixel > indexBarvySoused2 ) {
+						SouradniceXY souradniceVrstevnice = new SouradniceXY(a, b);
 						doublePixels[a][b] = colorRGB;
-						//poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
+						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 					}
 					else if(indexBarvyPixel > indexBarvySoused3 ) {
+						SouradniceXY souradniceVrstevnice = new SouradniceXY(a, b);
 						doublePixels[a][b] = colorRGB;
-						//poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
+						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 					}
 					else if(indexBarvyPixel > indexBarvySoused4 ) {
+						SouradniceXY souradniceVrstevnice = new SouradniceXY(a, b);
 						doublePixels[a][b] = colorRGB;
-						//poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
+						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 					}
 					
 					
@@ -177,7 +228,6 @@ public class DrawingPanel extends JPanel {
 		return image;
 		
 		
-		
 	}
 	
 	
@@ -188,7 +238,7 @@ public class DrawingPanel extends JPanel {
 	 */
 	public int indexBarvyVysky(int vyska) {
 		int index = 0;
-		for(int i = 0; i < 255 ; i += krokVysky) {
+		for(int i = 0; i < 255; i += krokVysky) {
 			double i1 = i - krokVysky;
 			if(i1  <= vyska && vyska <= i) {
 				return index;
@@ -238,13 +288,13 @@ public class DrawingPanel extends JPanel {
 		double scaleX = ((double) W) / iW;
 		double scaleY = ((double) H) / iH;
 
-		double scale = Math.min(scaleX, scaleY);
+		scale = Math.min(scaleX, scaleY);
 
 		int niW = (int) (iW * scale);
 		int niH = (int) (iH * scale);
 
-		int startX = (W - niW) / 2;
-		int startY = (H - niH) / 2;
+		startX = (W - niW) / 2;
+		startY = (H - niH) / 2;
 
 		int[][] pixels = arrayToDoubleArray(data);
 
@@ -271,8 +321,10 @@ public class DrawingPanel extends JPanel {
 		
 		
 		image = vrstevnice(image);
+		
+		
 		g2.drawImage(image, startX, startY, niW, niH, null);
-
+		
 		g2.setRenderingHints(aliasing);
 
 		windowsWidth = this.getWidth();
@@ -635,6 +687,18 @@ public class DrawingPanel extends JPanel {
 		return vypoceSouradniceXY;
 	}
 	
+	public int getVyska (int x, int y) {
+		int[][] doubleData = arrayToDoubleArray(nezpracovanaData);
+		
+		System.out.println(doubleData.length);
+		System.out.println(doubleData[0].length);
+		try {
+			return doubleData[x][y];
+		}catch (IndexOutOfBoundsException e) {
+			return -1;
+		}
+		
+	}
 	public void setMaxHodnota(int maxHodnota) {
 		this.maxHodnota = maxHodnota;
 	}
@@ -649,12 +713,27 @@ public class DrawingPanel extends JPanel {
 	public void setPocetBarev(int pocetBarev) {
 		this.pocetBarev = pocetBarev;
 	}
-	
-	
-	public void poleSouradnicVrst(List<SouradniceXY>[] poleSouradnicVrst2) {
-		this.poleSouradnicVrst = poleSouradnicVrst2;
-		
+	/**
+	 * Nastavuje bg_img z mainu
+	 * @param bg_img
+	 */
+	public void setImage(BufferedImage bg_img) {
+		this.bg_img = bg_img;
 	}
+	/**
+	 * Nastavuje data[] z mainu
+	 * @param data
+	 */
+	public void setData(int[] data) {
+		this.data = data;
+	}
+	
+	public void setNezpracovaneData(int[] nezpracovanaData) {
+		this.nezpracovanaData = nezpracovanaData;
+	}
+	
+	
+	
 	
 
 }
