@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 
 public class DrawingPanel extends JPanel {
 
-	private BufferedImage bg_img = nacteniPGM("data\\data_plzen.pgm");
+	private BufferedImage bg_img = nacteniPGM("data\\bin_data_carovy_kod.pgm");
 	private BufferedImage image;
 	public static int[] data;
 	

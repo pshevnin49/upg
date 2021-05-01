@@ -29,8 +29,7 @@ public class DrawingPanel extends JPanel {
 	private BufferedImage image;
 	private int[] data;
 	private int[] nezpracovanaData;
-	
-	
+
 	private int maxHodnota = 0;
 	private int pocetBarev = 0;
 	double krokVysky = 0;
@@ -39,250 +38,89 @@ public class DrawingPanel extends JPanel {
 	private int startY;
 	private int iW;
 	private int iH;
-	
-	
 
 	private double scale;
 
-	List<SouradniceXY>[] poleSouradnicVrst;
+	List<VrstenviceSour>[] poleSouradnicVrst;
 	private int windowsWidth = 0;
 	private int windowsHeight = 0;
 
 	public DrawingPanel() throws FileNotFoundException {
 		this.setPreferredSize(new Dimension(800, 600));
-		
+
 		this.addMouseListener(new MouseListener() {
-			
+
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
-				int x = (int) ((e.getX() - startX)/scale);
-				int y = (int) ((e.getY() - startY)/scale);
-				System.out.println(poleSouradnicVrst[6].get(1).getX());
-//				System.out.println("x = " + x + ", y = " + y);
-//				System.out.println("vyska = " + getVyska(x, y));
-				
+
+				int x = (int) ((e.getX() - startX) / scale);
+				int y = (int) ((e.getY() - startY) / scale);
+
+				System.out.println("x = " + x + ", y = " + y);
+				System.out.println("vyska = " + getVyska(x, y));
+				System.out.println(poleSouradnicVrst[10].get(2).getX());
+				System.out.println(poleSouradnicVrst[10].size());
+
 				int vyska = getZpracovanaVyska(x, y);
 				int indexBarvyVysky = indexBarvyVysky(vyska);
 				int polePixelu[] = new int[iW * iH];
 				image.getRGB(0, 0, iW, iH, polePixelu, 0, iW);
 				int doublePolePixelu[][] = arrayToDoubleArray(polePixelu);
 				Color redColor = Color.RED;
-				
-				for(int i = 0; i < poleSouradnicVrst[indexBarvyVysky].size(); i++) {
-					
-					int xV = (int) ((poleSouradnicVrst[indexBarvyVysky].get(i).getX() - startX)/scale);
-					int yV = (int) ((poleSouradnicVrst[indexBarvyVysky].get(i).getY() - startY)/scale);
-					
+
+				for (int i = 0; i < poleSouradnicVrst[indexBarvyVysky].size(); i++) {
+
+					int xV = (int) ((poleSouradnicVrst[indexBarvyVysky].get(i).getX() - startX) / scale);
+					int yV = (int) ((poleSouradnicVrst[indexBarvyVysky].get(i).getY() - startY) / scale);
+
 					int index = 0;
-					
+
 					for (int a = 0; a < iW; a++) {
 						for (int b = 0; b < iH; b++) {
-							
+
 							if (xV == a && yV == b) {
 								doublePolePixelu[a][b] = redColor.getRGB();
-								
+
 								i++;
 							}
-						
+
 						}
 					}
-					
+
 				}
 				polePixelu = doubleArrayToArray(doublePolePixelu);
 				image.setRGB(0, 0, iW, iH, polePixelu, 0, iW);
 				repaint();
-				
-				
-				
+
 			}
-			
+
 			@Override
 			public void mouseExited(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
 
 	}
-	
 
-	/**
-	 * Metoda processImage() prizpusobuje PGM data nactene ze souboru, do
-	 * cernobileho obrazku.
-	 */
-	private void processImage() {
-		iW = bg_img.getWidth();
-		iH = bg_img.getHeight();
-		
-		
-		int pocetBarev = maxHodnota / 50;
-		
-		this.image = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);
-
-		int[] pixels = new int[iW * iH];
-		Color[] colors = new Color[iW * iH];
-		
-		bg_img.getRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely do arraje
-		
-		
-		for (int i = 0; i < pixels.length; i++) {
-			int in_rgb = pixels[i];
-			
-			int b = in_rgb;
-			int g = in_rgb;
-			int r = in_rgb;
-
-			int gr = (1 * b + 3 * r + 6 * g) / 10;
-			
-			b = gr;
-			g = gr;
-			r = gr;
-			
-			int out_rgb = (r << 16) | (g << 8) | b;
-			
-			Color out = new Color(out_rgb);
-			
-			int grColor = out.getBlue();
-			
-			int koef = 0;
-			
-			for(double k = 0; k < 255; k += krokVysky) {
-				double k1 = k - krokVysky;
-				if(k1 <= grColor && grColor <= k) {
-					out_rgb = poleBarev[koef].getRGB();
-				}
-
-				koef++;
-			}
-			pixels[i] = out_rgb;
-			
-			
-		}
-		image.setRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely z arraje
-		
-	}
-	
-	
-	
-	public Color[] getBarvy(int pocetBarev){
-		Random rand = new Random();
-		Color[] poleBarev = new Color[pocetBarev];
-		
-		for (int i = 0; i < pocetBarev; i++) {
-			Color color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
-			poleBarev[i] = color;
-		}
-		return poleBarev;
-	}
-	/**
-	 * Metoda zabarvi vsichni pixely, ktere se nachazi mezi dvema vyskama v barvu vrstevnice, a vrati Image uz ze vrstevnicama.
-	 * Taky vklada souradnice vrstevnic pro kazdou barvu do vlastnihi arraje v pole
-	 * @param image
-	 * @return
-	 */
-	private BufferedImage vrstevnice (BufferedImage image) {
-		int iW = image.getWidth();
-		int iH = image.getHeight();
-		
-		int[] pixels = new int [iW * iH];
-		image.getRGB(0, 0, iW, iH, pixels, 0, iW);
-		int dataVysek [][] = arrayToDoubleArray(data);
-		int doublePixels[][] = arrayToDoubleArray(pixels);
-		poleSouradnicVrst = new ArrayList[pocetBarev];
-		
-		for(int i = 0; i < pocetBarev; i++) {
-			List<SouradniceXY> list = new ArrayList<>();
-			poleSouradnicVrst[i] = list;
-		}
-		
-		for (int a = 0; a < iW; a++) {//
-			for (int b = 0; b < iH; b++) {
-				try {
-					
-					Color color = new Color(153, 204, 255);
-					int colorRGB = color.getRGB();
-					int indexBarvyPixel = indexBarvyVysky(dataVysek [a][b]);
-					int indexBarvySoused1 = indexBarvyVysky(dataVysek [a + 1][b]);
-					int indexBarvySoused2 = indexBarvyVysky(dataVysek [a - 1][b]);
-					int indexBarvySoused3 = indexBarvyVysky(dataVysek [a][b + 1]);
-					int indexBarvySoused4 = indexBarvyVysky(dataVysek [a][b - 1]);
-					
-					
-					if(indexBarvyPixel > indexBarvySoused1 ) {
-						doublePixels[a][b] = colorRGB;
-						SouradniceXY souradniceVrstevnice = new SouradniceXY(a, b);
-						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
-						
-					}
-					else if(indexBarvyPixel > indexBarvySoused2 ) {
-						SouradniceXY souradniceVrstevnice = new SouradniceXY(a, b);
-						doublePixels[a][b] = colorRGB;
-						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
-					}
-					else if(indexBarvyPixel > indexBarvySoused3 ) {
-						SouradniceXY souradniceVrstevnice = new SouradniceXY(a, b);
-						doublePixels[a][b] = colorRGB;
-						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
-					}
-					else if(indexBarvyPixel > indexBarvySoused4 ) {
-						SouradniceXY souradniceVrstevnice = new SouradniceXY(a, b);
-						doublePixels[a][b] = colorRGB;
-						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
-					}
-					
-					
-				} catch (IndexOutOfBoundsException e) {
-
-				}
-
-			}
-		}
-		pixels = doubleArrayToArray(doublePixels);
-		image.setRGB(0, 0, iW, iH, pixels, 0, iW);
-		return image;
-		
-		
-	}
-	
-	
-	/**
-	 * Metoda prijima vysku a vrati koeficient barvy kterou tato vyska musi byta zabarvena
-	 * @param vyska
-	 * @return
-	 */
-	public int indexBarvyVysky(int vyska) {
-		int index = 0;
-		for(int i = 0; i < 255; i += krokVysky) {
-			double i1 = i - krokVysky;
-			if(i1  <= vyska && vyska <= i) {
-				return index;
-			}
-			index++;
-		}
-		return index;
-	}
-	
-	
 	/**
 	 * Metoda prepsana z JPanel, vyvolava metodu drawPlzenImage
 	 */
@@ -316,8 +154,7 @@ public class DrawingPanel extends JPanel {
 		g2.setColor(Color.BLACK);
 		g2.fillRect(0, 0, W, H);
 
-		int iW = image.getWidth();
-		int iH = image.getHeight();
+
 
 		double scaleX = ((double) W) / iW;
 		double scaleY = ((double) H) / iH;
@@ -346,19 +183,16 @@ public class DrawingPanel extends JPanel {
 
 		RenderingHints rh = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
 				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		
+
 		RenderingHints aliasing = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
 		g2.setRenderingHints(rh);
-		
-		
-		
-		image = vrstevnice(image);
-		
-		
+
+		image = kresleniVrstevnic(image);
+
 		g2.drawImage(image, startX, startY, niW, niH, null);
-		
+
 		g2.setRenderingHints(aliasing);
 
 		windowsWidth = this.getWidth();
@@ -373,6 +207,192 @@ public class DrawingPanel extends JPanel {
 		drawArrow(minPrevyseniX, minPrevyseniY, g2, scale, startX, startY);
 		drawDesc(minPrevyseniX, minPrevyseniY, "Min. prevyseni", g2, scale, startX, startY);
 
+	}
+
+	/**
+	 * Metoda processImage() prizpusobuje PGM data nactene ze souboru, do
+	 * cernobileho obrazku.
+	 */
+	private void processImage() {
+
+		iW = bg_img.getWidth();
+		iH = bg_img.getHeight();
+
+		int pocetBarev = maxHodnota / 50;
+
+		this.image = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);
+
+		int[] pixels = new int[iW * iH];
+		Color[] colors = new Color[iW * iH];
+
+		bg_img.getRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely do arraje
+
+		for (int i = 0; i < pixels.length; i++) {
+			int in_rgb = pixels[i];
+
+			int b = in_rgb;
+			int g = in_rgb;
+			int r = in_rgb;
+
+			int gr = (1 * b + 3 * r + 6 * g) / 10;
+
+			b = gr;
+			g = gr;
+			r = gr;
+
+			int out_rgb = (r << 16) | (g << 8) | b;
+
+			Color out = new Color(out_rgb);
+
+			int grColor = out.getBlue();
+
+			int koef = 0;
+
+			for (double k = 0; k < 255; k += krokVysky) {
+				double k1 = k - krokVysky;
+				if (k1 <= grColor && grColor <= k) {
+					out_rgb = poleBarev[koef].getRGB();
+
+				}
+
+				koef++;
+			}
+			pixels[i] = out_rgb;
+
+		}
+		image.setRGB(0, 0, iW, iH, pixels, 0, iW);// kopiruje vsichni pixely z arraje
+
+	}
+
+	public Color[] getBarvy(int pocetBarev) {
+		Random rand = new Random();
+		Color[] poleBarev = new Color[pocetBarev];
+
+		for (int i = 0; i < pocetBarev; i++) {
+			Color color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
+			poleBarev[i] = color;
+		}
+		return poleBarev;
+	}
+
+	/**
+	 * Metoda zabarvi vsichni pixely, ktere se nachazi mezi dvema vyskama v barvu
+	 * vrstevnice, a vrati Image uz ze vrstevnicama. Taky vklada souradnice
+	 * vrstevnic pro kazdou barvu do vlastnihi arraje v pole
+	 * 
+	 * @param image
+	 * @return
+	 */
+	private BufferedImage kresleniVrstevnic(BufferedImage image) {
+
+		int iW = image.getWidth();
+		int iH = image.getHeight();
+
+		int[] pixels = new int[iW * iH];
+		image.getRGB(0, 0, iW, iH, pixels, 0, iW);
+		int doublePixels[][] = arrayToDoubleArray(pixels);
+
+		for (int a = 0; a < iW; a++) {//
+			for (int b = 0; b < iH; b++) {
+				for (int c = 0; c < poleSouradnicVrst.length; c++) {
+					for (int d = 0; d < poleSouradnicVrst[c].size(); d++) {
+						
+						if(a == poleSouradnicVrst[c].get(d).getX()) {
+							if(b == poleSouradnicVrst[c].get(d).getY()) {
+								doublePixels[a][b] = poleSouradnicVrst[c].get(d).getColor().getRGB();
+								
+							}
+						}
+					}
+				}
+
+			}
+		}
+		pixels = doubleArrayToArray(doublePixels);
+		image.setRGB(0, 0, iW, iH, pixels, 0, iW);
+
+		return image;
+
+	}
+
+	/**
+	 * Metoda zaplnuje pole souradnic vrstevnic prvnima datama.
+	 * 
+	 * @param image
+	 * @return
+	 */
+	public void prvniZaplneniSour(BufferedImage image) {
+
+		int[] pixels = new int[iW * iH];
+		image.getRGB(0, 0, iW, iH, pixels, 0, iW);
+		int dataVysek[][] = arrayToDoubleArray(data);
+
+		poleSouradnicVrst = new ArrayList[pocetBarev];
+
+		for (int i = 0; i < pocetBarev; i++) {
+			List<VrstenviceSour> list = new ArrayList<>();
+			poleSouradnicVrst[i] = list;
+			
+
+		}
+
+		for (int a = 0; a < iW; a++) {//
+			for (int b = 0; b < iH; b++) {
+				
+				try {
+					
+					int indexBarvyPixel = indexBarvyVysky(dataVysek[a][b]);
+					
+					int indexBarvySoused1 = indexBarvyVysky(dataVysek[a + 1][b]);
+					int indexBarvySoused2 = indexBarvyVysky(dataVysek[a - 1][b]);
+					int indexBarvySoused3 = indexBarvyVysky(dataVysek[a][b + 1]);
+					int indexBarvySoused4 = indexBarvyVysky(dataVysek[a][b - 1]);
+
+					VrstenviceSour souradniceVrstevnice = new VrstenviceSour(a, b);
+					if (indexBarvyPixel > indexBarvySoused1) {
+						
+						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
+
+					} else if (indexBarvyPixel > indexBarvySoused2) {
+
+						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
+
+					} else if (indexBarvyPixel > indexBarvySoused3) {
+
+						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
+
+					} else if (indexBarvyPixel > indexBarvySoused4) {
+
+						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
+
+					}
+
+				} catch (IndexOutOfBoundsException e) {
+
+				}
+
+			}
+		}
+
+	}
+
+	/**
+	 * Metoda prijima vysku a vrati koeficient barvy kterou tato vyska musi byta
+	 * zabarvena
+	 * 
+	 * @param vyska
+	 * @return
+	 */
+	public int indexBarvyVysky(int vyska) {
+		int index = 0;
+		for (double i = 0; i < 255; i += krokVysky) {
+			double i1 = i - krokVysky;
+			if (i1 <= vyska && vyska <= i) {
+				return index;
+			}
+			index++;
+		}
+		return index;
 	}
 
 	/**
@@ -486,9 +506,11 @@ public class DrawingPanel extends JPanel {
 	 */
 
 	public int[][] arrayToDoubleArray(int[] data) {
-
-		int width = image.getWidth();
-		int height = image.getHeight();
+		
+		
+		int width = iW;
+		int height = iH;
+		
 
 		int[][] pixels = new int[width][height];
 
@@ -504,11 +526,11 @@ public class DrawingPanel extends JPanel {
 
 		return pixels;
 	}
-	
+
 	public int[] doubleArrayToArray(int[][] data) {
 
-		int width = image.getWidth();
-		int height = image.getHeight();
+		int width = iW;
+		int height = iH;
 
 		int[] pixels = new int[width * height];
 
@@ -663,8 +685,6 @@ public class DrawingPanel extends JPanel {
 		}
 
 	}
-	
-	
 
 	/**
 	 * Metoda prijima souradnice bodu, a spocita souradnice zacutku sibky.
@@ -720,66 +740,77 @@ public class DrawingPanel extends JPanel {
 		SouradniceXY vypoceSouradniceXY = new SouradniceXY((int) x1, (int) y1);
 		return vypoceSouradniceXY;
 	}
-	
-	public int getVyska (int x, int y) {
+
+	public int getVyska(int x, int y) {
 		int[][] doubleData = arrayToDoubleArray(nezpracovanaData);
-		
+
 //		System.out.println(doubleData.length);
 //		System.out.println(doubleData[0].length);
 		try {
 			return doubleData[x][y];
-		}catch (IndexOutOfBoundsException e) {
+		} catch (IndexOutOfBoundsException e) {
 			return -1;
 		}
-		
+
 	}
-	public int getZpracovanaVyska (int x, int y) {
+
+	public int getZpracovanaVyska(int x, int y) {
 		int[][] doubleData = arrayToDoubleArray(data);
-		
+
 //		System.out.println(doubleData.length);
 //		System.out.println(doubleData[0].length);
 		try {
 			return doubleData[x][y];
-		}catch (IndexOutOfBoundsException e) {
+		} catch (IndexOutOfBoundsException e) {
 			return -1;
 		}
-		
+
 	}
+	
+	
+	public void setWidth(int iW) {
+		this.iW = iW;
+	}
+	public void setHeight(int iH) {
+		this.iW = iH;
+	}
+	
 	public void setMaxHodnota(int maxHodnota) {
 		this.maxHodnota = maxHodnota;
 	}
-	
+
 	public void setKrokVysky(double krokVysky) {
 		this.krokVysky = krokVysky;
 	}
-	
-	public void setPoleBarev(Color[]poleBarev) {
+
+	public void setPoleBarev(Color[] poleBarev) {
 		this.poleBarev = poleBarev;
 	}
+
 	public void setPocetBarev(int pocetBarev) {
 		this.pocetBarev = pocetBarev;
 	}
+
 	/**
 	 * Nastavuje bg_img z mainu
+	 * 
 	 * @param bg_img
 	 */
 	public void setImage(BufferedImage bg_img) {
 		this.bg_img = bg_img;
 	}
+
 	/**
 	 * Nastavuje data[] z mainu
+	 * 
 	 * @param data
 	 */
 	public void setData(int[] data) {
 		this.data = data;
 	}
-	
+
 	public void setNezpracovaneData(int[] nezpracovanaData) {
 		this.nezpracovanaData = nezpracovanaData;
 	}
-	
-	
-	
-	
 
 }
