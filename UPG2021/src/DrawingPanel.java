@@ -7,6 +7,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.color.ColorSpace;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
@@ -36,6 +37,8 @@ public class DrawingPanel extends JPanel {
 	Color[] poleBarev;
 	private int startX;
 	private int startY;
+	private int iW;
+	private int iH;
 	
 	
 
@@ -61,9 +64,40 @@ public class DrawingPanel extends JPanel {
 				
 				int x = (int) ((e.getX() - startX)/scale);
 				int y = (int) ((e.getY() - startY)/scale);
+				System.out.println(poleSouradnicVrst[6].get(1).getX());
+//				System.out.println("x = " + x + ", y = " + y);
+//				System.out.println("vyska = " + getVyska(x, y));
 				
-				System.out.println("x = " + x + ", y = " + y);
-				System.out.println("vyska = " + getVyska(x, y));
+				int vyska = getZpracovanaVyska(x, y);
+				int indexBarvyVysky = indexBarvyVysky(vyska);
+				int polePixelu[] = new int[iW * iH];
+				image.getRGB(0, 0, iW, iH, polePixelu, 0, iW);
+				int doublePolePixelu[][] = arrayToDoubleArray(polePixelu);
+				Color redColor = Color.RED;
+				
+				for(int i = 0; i < poleSouradnicVrst[indexBarvyVysky].size(); i++) {
+					
+					int xV = (int) ((poleSouradnicVrst[indexBarvyVysky].get(i).getX() - startX)/scale);
+					int yV = (int) ((poleSouradnicVrst[indexBarvyVysky].get(i).getY() - startY)/scale);
+					
+					int index = 0;
+					
+					for (int a = 0; a < iW; a++) {
+						for (int b = 0; b < iH; b++) {
+							
+							if (xV == a && yV == b) {
+								doublePolePixelu[a][b] = redColor.getRGB();
+								
+								i++;
+							}
+						
+						}
+					}
+					
+				}
+				polePixelu = doubleArrayToArray(doublePolePixelu);
+				image.setRGB(0, 0, iW, iH, polePixelu, 0, iW);
+				repaint();
 				
 				
 				
@@ -97,8 +131,8 @@ public class DrawingPanel extends JPanel {
 	 * cernobileho obrazku.
 	 */
 	private void processImage() {
-		int iW = bg_img.getWidth();
-		int iH = bg_img.getHeight();
+		iW = bg_img.getWidth();
+		iH = bg_img.getHeight();
 		
 		
 		int pocetBarev = maxHodnota / 50;
@@ -690,8 +724,20 @@ public class DrawingPanel extends JPanel {
 	public int getVyska (int x, int y) {
 		int[][] doubleData = arrayToDoubleArray(nezpracovanaData);
 		
-		System.out.println(doubleData.length);
-		System.out.println(doubleData[0].length);
+//		System.out.println(doubleData.length);
+//		System.out.println(doubleData[0].length);
+		try {
+			return doubleData[x][y];
+		}catch (IndexOutOfBoundsException e) {
+			return -1;
+		}
+		
+	}
+	public int getZpracovanaVyska (int x, int y) {
+		int[][] doubleData = arrayToDoubleArray(data);
+		
+//		System.out.println(doubleData.length);
+//		System.out.println(doubleData[0].length);
 		try {
 			return doubleData[x][y];
 		}catch (IndexOutOfBoundsException e) {
