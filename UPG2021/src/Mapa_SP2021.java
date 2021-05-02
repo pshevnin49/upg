@@ -94,7 +94,7 @@ public class Mapa_SP2021 {
 		}
 
 		double krokVysky = (255.0 / maxColor) * 50;
-		int pocetBarev = ((int) (255 / krokVysky)) + 1;
+		int pocetBarev = ((int) (255 / krokVysky));
 
 		panel.setMaxHodnota(maxColor);
 
@@ -112,7 +112,7 @@ public class Mapa_SP2021 {
 		panel.setWidth(img.getWidth());
 		panel.setHeight(img.getHeight());
 		
-		panel.prvniZaplneniSour(img);
+		panel.prvniZaplneniSour();
 		panel.setImage(img);
 	}
 

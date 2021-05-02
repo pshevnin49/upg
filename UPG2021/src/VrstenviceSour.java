@@ -3,18 +3,13 @@ import java.awt.Color;
 public class VrstenviceSour {
 	private SouradniceXY souradnice;
 	private Color color = new Color(153, 204, 255);
+	private int x; 
+	private int y;
 	
-	
-	
-	
-
 	public VrstenviceSour(int x, int y) {
-		SouradniceXY souradnice1 = new SouradniceXY(x, y);
-		this.souradnice = souradnice1;
+		this.x = x;
+		this.y = y;
 	}
-
-
-
 	public SouradniceXY getSouradniceXY() {
 		return souradnice;
 	}
@@ -28,10 +23,10 @@ public class VrstenviceSour {
 		this.color = color;
 	}
 	public int getX() {
-		return getSouradniceXY().getX();
+		return x;
 	}
 	public int getY() {
-		return getSouradniceXY().getY();
+		return y;
 	}
 	
 }
