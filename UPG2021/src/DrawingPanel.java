@@ -40,6 +40,9 @@ public class DrawingPanel extends JPanel {
 	private int iW;
 	private int iH;
 	private boolean[] otevreneVrst;
+	private int souradniceProVypisX;
+	private int souradniceProVypisY;
+	private int zmacknutaVyska;
 
 	private double scale;
 
@@ -66,6 +69,11 @@ public class DrawingPanel extends JPanel {
 
 				int x = (int) ((e.getX() - startX) / scale);
 				int y = (int) ((e.getY() - startY) / scale);
+				
+				souradniceProVypisX = x;
+				souradniceProVypisY = y;
+				
+				zmacknutaVyska = getVyska(x, y);
 
 				for (int i = 0; i < otevreneVrst.length; i++) {
 					if (otevreneVrst[i]) {
@@ -164,7 +172,7 @@ public class DrawingPanel extends JPanel {
 	 * @throws FileNotFoundException
 	 */
 	public void drawPlzenImage(Graphics2D g2, int W, int H) throws FileNotFoundException {
-		System.out.println("Start drawPlzenImage");
+	
 		g2.setColor(Color.BLACK);
 		g2.fillRect(0, 0, W, H);
 
@@ -202,6 +210,8 @@ public class DrawingPanel extends JPanel {
 		g2.setRenderingHints(rh);
 
 		imageVrstevnice = kresleniVrstevnic(image);
+		
+		
 
 		g2.drawImage(image, startX, startY, niW, niH, null);
 
@@ -209,6 +219,8 @@ public class DrawingPanel extends JPanel {
 
 		windowsWidth = this.getWidth();
 		windowsHeight = this.getHeight();
+		
+		vypisZmacVysky(g2, scale, startX, startY);
 
 		drawArrow(maxSloupaniX, maxSloupaniY, g2, scale, startX, startY);
 		drawDesc(maxSloupaniX, maxSloupaniY, "Max. sloupani", g2, scale, startX, startY);
@@ -218,7 +230,7 @@ public class DrawingPanel extends JPanel {
 
 		drawArrow(minPrevyseniX, minPrevyseniY, g2, scale, startX, startY);
 		drawDesc(minPrevyseniX, minPrevyseniY, "Min. prevyseni", g2, scale, startX, startY);
-		System.out.println("Stop drawPlzenImage");
+		
 
 	}
 
@@ -227,7 +239,7 @@ public class DrawingPanel extends JPanel {
 	 * cernobileho obrazku.
 	 */
 	private void processImage() {
-		System.out.println("Start processImage");
+		
 		int iWidth = bg_img.getWidth();
 		int iHeight = bg_img.getHeight();
 
@@ -274,7 +286,7 @@ public class DrawingPanel extends JPanel {
 
 		}
 		image.setRGB(0, 0, iWidth, iHeight, pixels, 0, iWidth);// kopiruje vsichni pixely z arraje
-		System.out.println("Stop processImage");
+		
 	}
 
 	public Color[] getBarvy(int pocetBarev) {
@@ -297,7 +309,7 @@ public class DrawingPanel extends JPanel {
 	 * @return
 	 */
 	private BufferedImage kresleniVrstevnic(BufferedImage imageVrstevnic) {
-		System.out.println("start kresleniVrstevnic");
+		
 		int[] pixels = new int[iW * iH];
 		imageVrstevnic.getRGB(0, 0, iW, iH, pixels, 0, iW);
 		int doublePixels[][] = arrayToDoubleArray(pixels);
@@ -313,31 +325,12 @@ public class DrawingPanel extends JPanel {
 
 		pixels = doubleArrayToArray(doublePixels);
 		imageVrstevnic.setRGB(0, 0, iW, iH, pixels, 0, iW);
-		System.out.println("stop kresleniVrstevnic");
+		
 		return imageVrstevnic;
 
 	}
 
-	public int indexVrstevnice(int vyska) {
-		int index = 0;
-		for (double i = 0; i < 255; i += krokVysky) {
-			double i1 = i - krokVysky;
-			if (i1 <= vyska && vyska <= i) {
-				double rozdil = vyska - i1;
-				if (rozdil > (krokVysky / 2)) {
-					return index + 1;
-				} else if (rozdil < (krokVysky / 2)) {
-					return index - 1;
-				} else {
-					return index;
-				}
-
-			}
-			index++;
-		}
-		return index;
-
-	}
+	
 
 	/**
 	 * Metoda zaplnuje pole souradnic vrstevnic prvnima datama.
@@ -460,6 +453,30 @@ public class DrawingPanel extends JPanel {
 		}
 		SouradniceXY maxSloupaniXY = new SouradniceXY(maxSloupaniX, maxSloupaniY);
 		return maxSloupaniXY;
+	}
+	
+	
+	/**
+	 * 
+	 * @param g2
+	 */
+	public void vypisZmacVysky (Graphics2D g2, double scale, int startX, int startY) {
+		if(souradniceProVypisX != 0 || souradniceProVypisY != 0) {
+			double velkostFontu = 15;
+			g2.setColor(Color.BLACK);
+			Font font = new Font("Times new roman", Font.PLAIN, (int) velkostFontu);
+			g2.setFont(font);
+			String vypis = Integer.toString(zmacknutaVyska);
+			
+			int x = (int) (souradniceProVypisX * scale) + startX;
+			int y = (int) (souradniceProVypisY * scale) + startY;
+			
+			System.out.println(x + " x");
+			System.out.println(y + " y");
+			
+			g2.drawString(vypis, x, y);
+			System.out.println("vypisZmacVysky");
+		}
 	}
 
 	/**
