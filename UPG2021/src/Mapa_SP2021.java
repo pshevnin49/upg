@@ -27,7 +27,7 @@ public class Mapa_SP2021 {
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);// prida komponentu
 		// nacteniPGM(args[0], panel);
-		nacteniPGM("data\\data_horizont.pgm", panel);
+		nacteniPGM("data\\data_plzen.pgm", panel);
 
 		okno.pack(); // prepocte velikost okna
 

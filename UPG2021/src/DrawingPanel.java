@@ -86,7 +86,7 @@ public class DrawingPanel extends JPanel {
 				if (indexVrstevnice >= poleSouradnicVrst.length) {
 					indexVrstevnice -= 2;
 				}
-				
+
 				int polePixelu[] = new int[iW * iH];
 				image.getRGB(0, 0, iW, iH, polePixelu, 0, iW);
 				Color redColor = Color.RED;
@@ -302,24 +302,15 @@ public class DrawingPanel extends JPanel {
 		imageVrstevnic.getRGB(0, 0, iW, iH, pixels, 0, iW);
 		int doublePixels[][] = arrayToDoubleArray(pixels);
 
-		for (int a = 0; a < iW; a++) {
-			for (int b = 0; b < iH; b++) {
-				for (int c = 0; c < poleSouradnicVrst.length; c++) {
-					for (int d = 0; d < poleSouradnicVrst[c].size(); d++) {
-
-						if (a == poleSouradnicVrst[c].get(d).getX() && b == poleSouradnicVrst[c].get(d).getY()) {
-
-							doublePixels[a][b] = poleSouradnicVrst[c].get(d).getColor().getRGB();
-							System.out.println("pracuje...");
-							System.out.println("pracuje......");
-
-						}
-
-					}
-				}
-
+		for (int a = 0; a < poleSouradnicVrst.length; a++) {
+			for (int b = 0; b < poleSouradnicVrst[a].size(); b++) {
+				int x = poleSouradnicVrst[a].get(b).getX();
+				int y = poleSouradnicVrst[a].get(b).getY();
+				doublePixels[x][y] = poleSouradnicVrst[a].get(b).getColor().getRGB();
+				
 			}
 		}
+
 		pixels = doubleArrayToArray(doublePixels);
 		imageVrstevnic.setRGB(0, 0, iW, iH, pixels, 0, iW);
 		System.out.println("stop kresleniVrstevnic");
@@ -358,7 +349,6 @@ public class DrawingPanel extends JPanel {
 
 		int dataVysek[][] = arrayToDoubleArray(data);
 		poleSouradnicVrst = new ArrayList[pocetBarev];
-		
 
 		for (int i = 0; i < pocetBarev; i++) {
 			List<VrstenviceSour> list = new ArrayList<>();
