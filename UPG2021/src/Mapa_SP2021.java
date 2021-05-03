@@ -27,7 +27,7 @@ public class Mapa_SP2021 {
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);// prida komponentu
 		// nacteniPGM(args[0], panel);
-		nacteniPGM("data\\data_plzen.pgm", panel);
+		nacteniPGM("data\\data_horizont.pgm", panel);
 
 		okno.pack(); // prepocte velikost okna
 
@@ -97,10 +97,18 @@ public class Mapa_SP2021 {
 		int pocetBarev = ((int) (255 / krokVysky));
 
 		panel.setMaxHodnota(maxColor);
-
+		
 		panel.setKrokVysky(krokVysky);
 
 		panel.setPocetBarev(pocetBarev);
+		boolean[] otevreneVrstevnice = new boolean[pocetBarev + 1];
+		
+		for(int i = 0; i < pocetBarev; i++) {
+			otevreneVrstevnice[i] = false;
+		}
+		panel.setOtevreneVrs(otevreneVrstevnice);
+		
+		
 		panel.setPoleBarev(panel.getBarvy(pocetBarev));
 
 		panel.setData(pixels);
