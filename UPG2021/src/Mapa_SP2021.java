@@ -22,7 +22,7 @@ public class Mapa_SP2021 {
 		JFrame okno = new JFrame();
 
 		okno.setTitle("Pavel Shevnin A20B0231P");
-		okno.setSize(620, 480);
+		okno.setSize(800, 600);
 
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);// prida komponentu
@@ -94,14 +94,14 @@ public class Mapa_SP2021 {
 		}
 
 		double krokVysky = (255.0 / maxColor) * 50;
-		int pocetBarev = ((int) (255 / krokVysky));
+		int pocetBarev = ((int) (255 / krokVysky) + 1);
 
 		panel.setMaxHodnota(maxColor);
 		
 		panel.setKrokVysky(krokVysky);
 
 		panel.setPocetBarev(pocetBarev);
-		boolean[] otevreneVrstevnice = new boolean[pocetBarev + 1];
+		boolean[] otevreneVrstevnice = new boolean[pocetBarev];
 		
 		for(int i = 0; i < pocetBarev; i++) {
 			otevreneVrstevnice[i] = false;
