@@ -1,5 +1,8 @@
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,7 +10,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class Mapa_SP2021 {
 	/**
@@ -22,13 +27,43 @@ public class Mapa_SP2021 {
 		JFrame okno = new JFrame();
 
 		okno.setTitle("Pavel Shevnin A20B0231P");
-		okno.setSize(800, 600);
+		okno.setSize(900, 700);
 
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);// prida komponentu
 		// nacteniPGM(args[0], panel);
 		nacteniPGM("data\\data_plzen.pgm", panel);
+		JPanel buttonPanel = new JPanel();
 
+		JButton btnHist = new JButton("Histogram");
+		JButton btnGraf = new JButton("Graf");
+		
+		buttonPanel.add(btnHist, BorderLayout.WEST);
+		buttonPanel.add(btnGraf, BorderLayout.EAST);
+		
+		
+		btnHist.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("histogram");
+				
+				
+			}
+		});
+		btnGraf.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("graf");
+				
+				
+			}
+		});
+
+		
+
+		okno.add(buttonPanel, BorderLayout.SOUTH);
 		okno.pack(); // prepocte velikost okna
 
 		okno.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
