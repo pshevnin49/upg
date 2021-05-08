@@ -162,6 +162,7 @@ public class DrawingPanel extends JPanel {
 	 * @param color
 	 */
 	private void barveniVrstevnice(int indexVrstevnice, Color color) {
+
 		try {
 			for (int i = 0; i < poleSouradnicVrst[indexVrstevnice].size(); i++) {
 				poleSouradnicVrst[indexVrstevnice].get(i).setColor(color);
@@ -333,8 +334,6 @@ public class DrawingPanel extends JPanel {
 		int iWidth = bg_img.getWidth();
 		int iHeight = bg_img.getHeight();
 
-		int pocetBarev = maxHodnota / 50;
-
 		this.image = new BufferedImage(iWidth, iHeight, BufferedImage.TYPE_3BYTE_BGR);
 
 		int[] pixels = new int[iWidth * iHeight];
@@ -363,7 +362,7 @@ public class DrawingPanel extends JPanel {
 
 			int koef = 0;
 
-			for (double k = 0; k < 255; k += krokVysky) {
+			for (double k = krokVysky; k < 255; k += krokVysky) {
 				double k1 = k - krokVysky;
 				if (k1 <= grColor && grColor <= k) {
 					out_rgb = poleBarev[koef].getRGB();
@@ -389,7 +388,7 @@ public class DrawingPanel extends JPanel {
 	public Color[] getBarvy(int pocetBarev) {
 
 		double krokBarvy = 255.0 / pocetBarev;
-		
+
 		double indexR = 0;
 		double indexG = 255;
 		double indexB = 80;
@@ -414,7 +413,6 @@ public class DrawingPanel extends JPanel {
 				indexG--;
 			}
 
-			
 			Color color1 = new Color((int) indexR, (int) indexG, (int) indexB);
 
 			poleBarev[i] = color1;
@@ -763,15 +761,14 @@ public class DrawingPanel extends JPanel {
 		double c_x = x2 - u_x * tip_length;
 		double c_y = y2 - u_y * tip_length;
 
-		
 		System.out.println(width - startX + " width");
 		System.out.println(x1 + " x");
 		System.out.println(height + " height");
 		System.out.println(y1 + " y");
-		
+
 		if (x1 > startX && x1 < width + startX) {
 			if (y1 > 0 && y1 < height) {
-				
+
 				g2.draw(new Line2D.Double(x1, y1, x2, y2));
 				g2.setStroke(new BasicStroke(3));
 				g2.draw(new Line2D.Double(c_x + v_x, c_y + v_y, x2, y2));
