@@ -21,16 +21,24 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardXYItemLabelGenerator;
+import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.statistics.HistogramDataset;
+import org.jfree.data.xy.XYDataset;
 
 public class Mapa_SP2021 {
-	
-	private static int [] dataProGraf;
+
+	private static int[] dataProGraf;
 	private static int maxHodnota;
+
 	/**
 	 * Metoda main, tvori instance tridy JPanel, a instance tridy DrawingPanel
 	 * 
@@ -178,81 +186,64 @@ public class Mapa_SP2021 {
 		panel.prvniZaplneniSour();
 		panel.setImage(img);
 	}
-	
-	private static void histogramGraf () {
+
+	private static void histogramGraf() {
 		JFrame win = new JFrame();
 		win.setTitle("Histogram prevyseni");
-		
+
 		int[] data = poleVysek();
-		ChartPanel panel = new ChartPanel(
-				createBarChart(data)
-				);
+		ChartPanel panel = new ChartPanel(createChart(dataProGraf));
 		win.add(panel);
-		
+
 		win.pack();
 		win.setLocationRelativeTo(null);
 		win.setVisible(true);
-		
+
 	}
 	
+	
+
 	private static int[] poleVysek() {
-		int delka = maxHodnota/50;
-		int [] poleVysek = new int[delka];
-		for(int i = 0; i < delka; i++) {
+		int delka = maxHodnota / 50;
+		int[] poleVysek = new int[delka];
+		for (int i = 0; i < delka; i++) {
 			poleVysek[i] = 0;
 		}
-		
-		for(int a = 0; a < dataProGraf.length; a++) {
+
+		for (int a = 0; a < dataProGraf.length; a++) {
 			int koef = 0;
-			for(int b = 0; b < delka; b++) {
-				if(dataProGraf[a] <= koef && dataProGraf[a] >= koef - 50) {
+			for (int b = 0; b < delka; b++) {
+				if (dataProGraf[a] <= koef && dataProGraf[a] >= koef - 50) {
 					poleVysek[b]++;
 				}
 				koef += 50;
 			}
 		}
 		return poleVysek;
-		
+
 	}
-	
-	private static JFreeChart createBarChart(int [] data) {
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+	private static JFreeChart createChart(int[] data) {
 		
-		for(int a = 0; a < data.length; a++) {
-			String vyska1 = Integer.toString(a * 50);
-			String vyska2 = Integer.toString((a * 50) + 50);
-			String vyskaVal = (vyska1 + "-" + vyska2);
-			dataset.addValue(data[a],vyskaVal, vyskaVal );
+		double dataDouble[] = new double[data.length];
+		for(int i = 0; i < data.length; i++) {
+			dataDouble[i] = data[i];
 		}
-	
-		JFreeChart chart = ChartFactory.createBarChart(
-				"Histogram prevyseni", 
-				"Vyska", 
-				"Pocet bodu ve vysce", 
-				dataset);
 		
-		CategoryPlot plot =	chart.getCategoryPlot();
+		HistogramDataset dataset = new HistogramDataset();
+		
+		dataset.addSeries("pocet pocet bodu", dataDouble, 15);
+
+		JFreeChart chart = ChartFactory.createHistogram("Histogram", "Data", "Pocet bodu", dataset);
+		
+		
+		XYPlot plot = chart.getXYPlot();
 		
 		plot.setBackgroundPaint(Color.WHITE);
-		plot.setRangeMinorGridlinePaint(Color.LIGHT_GRAY);
-		plot.setRangeGridlinesVisible(true);
-		plot.getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
 		
-		CategoryItemRenderer render = plot.getRenderer();
-		
-		render.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}", NumberFormat.getIntegerInstance()));
-		render.setDefaultItemLabelFont(new Font("Calibri", Font.PLAIN, 11));
-		
-		render.setDefaultItemLabelsVisible(true);
-		
-		BarRenderer br = (BarRenderer)render;
-		br.setItemMargin(0.01);
-		br.setBarPainter(new StandardBarPainter());
+		XYItemRenderer render = plot.getRenderer();
 		
 		return chart;
 	}
-	
-	
-	
 
 }

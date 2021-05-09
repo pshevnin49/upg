@@ -1,4 +1,3 @@
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -45,7 +44,7 @@ public class DrawingPanel extends JPanel {
 	private int thisWidth;
 	private int thisHeight;
 	private int vyskaLegendy = 28;
-	private int indexMinimalniBarvy = 100;
+	private int indexMinimalniBarvy = 100000;
 	private int minimalniVyska;
 
 	private double scale;
@@ -348,36 +347,34 @@ public class DrawingPanel extends JPanel {
 			int g = in_rgb;
 			int r = in_rgb;
 
-			int gr = (1 * b + 3 * r + 6 * g) / 10;
-
-			b = gr;
-			g = gr;
-			r = gr;
-
 			int out_rgb = (r << 16) | (g << 8) | b;
 
 			Color out = new Color(out_rgb);
 
 			int grColor = out.getBlue();
 
-			int koef = 0;
-
-			for (double k = krokVysky; k < 255; k += krokVysky) {
-				double k1 = k - krokVysky;
-				if (k1 <= grColor && grColor <= k) {
-					out_rgb = poleBarev[koef].getRGB();
-					if (indexMinimalniBarvy > koef) {
-						indexMinimalniBarvy = koef;
-					}
-				}
-
-				koef++;
+			int koef = indexBarvyVysky(grColor);
+			out_rgb = poleBarev[koef].getRGB();
+			
+			if (indexMinimalniBarvy > koef) {
+				indexMinimalniBarvy = koef;
 			}
+
+//			for (double k = krokVysky; k < 255; k += krokVysky) {
+//				double k1 = k - krokVysky;
+//				if (k1 <= grColor && grColor <= k) {
+//					out_rgb = poleBarev[koef].getRGB();
+//					if (indexMinimalniBarvy > koef) {
+//						indexMinimalniBarvy = koef;
+//					}
+//				}
+//
+//				koef++;
+//			}
 			pixels[i] = out_rgb;
 
 		}
 		image.setRGB(0, 0, iWidth, iHeight, pixels, 0, iWidth);// kopiruje vsichni pixely z arraje
-
 	}
 
 	/**
