@@ -38,6 +38,7 @@ public class Mapa_SP2021 {
 
 	private static int[] dataProGraf;
 	private static int maxHodnota;
+	private static int minHodnota = 1000000;
 
 	/**
 	 * Metoda main, tvori instance tridy JPanel, a instance tridy DrawingPanel
@@ -56,36 +57,32 @@ public class Mapa_SP2021 {
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);// prida komponentu
 		// nacteniPGM(args[0], panel);
-		nacteniPGM("data\\data_plzen.pgm", panel);
+		nacteniPGM("data\\data_jedna.pgm", panel);
 		JPanel buttonPanel = new JPanel();
 
 		JButton btnHist = new JButton("Histogram");
 		JButton btnGraf = new JButton("Graf");
-		
+
 		buttonPanel.add(btnHist, BorderLayout.WEST);
 		buttonPanel.add(btnGraf, BorderLayout.EAST);
-		
-		
+
 		btnHist.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("histogram");
 				histogramGraf();
-				
+
 			}
 		});
 		btnGraf.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("graf");
-				
-				
+				prvniGraf1();
+
 			}
 		});
-
-		
 
 		okno.add(buttonPanel, BorderLayout.SOUTH);
 		okno.pack(); // prepocte velikost okna
@@ -98,7 +95,7 @@ public class Mapa_SP2021 {
 
 	/**
 	 * Metoda prijima jmeno souboru, a nacita pgm p2 data. Zpracovava data a vrati
-	 * BufferedImage
+	 * BufferedImage taky zadava spoustu setteru pro panel
 	 * 
 	 * @param jmenoSouboru
 	 * @return img // obrazek BufferedImage
@@ -137,7 +134,6 @@ public class Mapa_SP2021 {
 			if (maxColor > 255) {
 				double koef = maxColor / 255;
 				koef++;
-
 				int color = (int) (hodnota / koef);
 				pixels[i] = color;
 			} else if (maxColor < 255) {
@@ -149,6 +145,9 @@ public class Mapa_SP2021 {
 				pixels[i] = hodnota;
 			}
 			nezpracovanaData[i] = hodnota;
+			if (minHodnota > hodnota) {
+				minHodnota = hodnota;
+			}
 
 		}
 
@@ -156,43 +155,44 @@ public class Mapa_SP2021 {
 		int pocetBarev = ((int) (255 / krokVysky) + 1);
 
 		panel.setMaxHodnota(maxColor);
-		
+
 		maxHodnota = maxColor;
-		
-		
+
 		panel.setKrokVysky(krokVysky);
 
 		panel.setPocetBarev(pocetBarev);
 		boolean[] otevreneVrstevnice = new boolean[pocetBarev];
-		
-		for(int i = 0; i < pocetBarev; i++) {
+
+		for (int i = 0; i < pocetBarev; i++) {
 			otevreneVrstevnice[i] = false;
 		}
 		panel.setOtevreneVrs(otevreneVrstevnice);
-		
-		
+
 		panel.setPoleBarev(panel.getBarvy(pocetBarev));
 
 		panel.setData(pixels);
 
 		dataProGraf = nezpracovanaData;
+
 		panel.setNezpracovaneData(nezpracovanaData);
 
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 		img.setRGB(0, 0, width, height, pixels, 0, width);
 		panel.setWidth(img.getWidth());
 		panel.setHeight(img.getHeight());
-		
+
 		panel.prvniZaplneniSour();
 		panel.setImage(img);
 	}
-
+	/**
+	 * Metoda tvori okno pro graf histogram prevyseni, v okne vykresluje JFrechart graf
+	 */
 	private static void histogramGraf() {
 		JFrame win = new JFrame();
 		win.setTitle("Histogram prevyseni");
 
-		int[] data = poleVysek();
-		ChartPanel panel = new ChartPanel(createChart(dataProGraf));
+		
+		ChartPanel panel = new ChartPanel(histogram(dataProGraf));
 		win.add(panel);
 
 		win.pack();
@@ -200,50 +200,128 @@ public class Mapa_SP2021 {
 		win.setVisible(true);
 
 	}
-	
-	
+	/**
+	 * Metoda tvori okno pro prvni graf z ukolu prevyseni, v okne vykresluje JFrechart graf
+	 */
+	private static void prvniGraf1() {
+		JFrame win1 = new JFrame();
+		win1.setTitle("Graf");
 
-	private static int[] poleVysek() {
-		int delka = maxHodnota / 50;
-		int[] poleVysek = new int[delka];
-		for (int i = 0; i < delka; i++) {
-			poleVysek[i] = 0;
-		}
+		
+		ChartPanel panel = new ChartPanel(prvniGraf());
+		win1.add(panel);
 
-		for (int a = 0; a < dataProGraf.length; a++) {
-			int koef = 0;
-			for (int b = 0; b < delka; b++) {
-				if (dataProGraf[a] <= koef && dataProGraf[a] >= koef - 50) {
-					poleVysek[b]++;
-				}
-				koef += 50;
-			}
-		}
-		return poleVysek;
+		win1.pack();
+		win1.setLocationRelativeTo(null);
+		win1.setVisible(true);
 
 	}
 
-	private static JFreeChart createChart(int[] data) {
-		
+	/**
+	 * Metoda tvori histogram vysek pomoci knihovny Jfreechart
+	 * @param data
+	 * @return
+	 */
+	private static JFreeChart histogram(int[] data) {
+
 		double dataDouble[] = new double[data.length];
-		for(int i = 0; i < data.length; i++) {
+		for (int i = 0; i < data.length; i++) {
 			dataDouble[i] = data[i];
 		}
-		
+
 		HistogramDataset dataset = new HistogramDataset();
-		
-		dataset.addSeries("pocet pocet bodu", dataDouble, 15);
+
+		dataset.addSeries("Pocet bodu", dataDouble, 15);
 
 		JFreeChart chart = ChartFactory.createHistogram("Histogram", "Data", "Pocet bodu", dataset);
-		
-		
+
 		XYPlot plot = chart.getXYPlot();
-		
+
 		plot.setBackgroundPaint(Color.WHITE);
-		
+
 		XYItemRenderer render = plot.getRenderer();
-		
+
 		return chart;
+	}
+	/**
+	 * Metoda tvori 1. graf z ukolu pomoci knihovny Jfreechart
+	 * @return
+	 */
+	private static JFreeChart prvniGraf() {
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		dataset.addValue(maxHodnota, "Mapa", "Maximalni hodnota");
+		dataset.addValue(minHodnota, "Mapa", "Minimalni hodnota");
+		dataset.addValue(medianPrevyseni(dataProGraf), "Mapa", "Median prevyseni");
+		dataset.addValue(horniKvartil(dataProGraf), "Mapa", "Horni kvartil");
+		dataset.addValue(dolniKvartil(dataProGraf), "Mapa", "Dolni kvartil");
+
+		JFreeChart chart = ChartFactory.createBarChart("Graf pro mapu", "Hodnota", "Vyska v metrech", dataset);
+
+		CategoryPlot plot = chart.getCategoryPlot();
+		plot.setBackgroundPaint(Color.WHITE);
+		plot.setRangeMinorGridlinePaint(Color.LIGHT_GRAY);
+		plot.setRangeGridlinesVisible(true);
+		plot.getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
+
+		CategoryItemRenderer render = plot.getRenderer();
+
+		render.setDefaultItemLabelGenerator(
+				new StandardCategoryItemLabelGenerator("{2}m", NumberFormat.getIntegerInstance()));
+		render.setDefaultItemLabelFont(new Font("Calibri", Font.PLAIN, 11));
+
+		render.setDefaultItemLabelsVisible(true);
+
+		BarRenderer br = (BarRenderer) render;
+		br.setItemMargin(0.002);
+		br.setBarPainter(new StandardBarPainter());
+
+		return chart;
+
+	}
+	/**
+	 * Metoda spocita median prevyseni
+	 * @param data
+	 * @return
+	 */
+	private static int medianPrevyseni(int[] data) {
+		int sum = 0;
+		for (int i = 0; i < data.length; i++) {
+			sum += data[i];
+		}
+		return (sum / data.length);
+	}
+
+	private static int dolniKvartil(int[] data) {
+		int[] sortedData = bubbleSort(data);
+		int koef = (data.length/2)/2;
+		return sortedData[koef];
+	}
+
+	private static int horniKvartil(int[] data) {
+		
+		int[] sortedData = bubbleSort(data);
+		int ctvrt = (data.length/2)/2;
+		int koef = (data.length/2) + ctvrt;
+		return data[koef];
+	}
+
+	static int[] bubbleSort(int[] arr) {
+		int [] data = arr;
+		int n = data.length;
+		int temp = 0;
+		for (int i = 0; i < n; i++) {
+			for (int j = 1; j < (n - i); j++) {
+				if (data[j - 1] > data[j]) {
+					// swap elements
+					temp = data[j - 1];
+					data[j - 1] = data[j];
+					data[j] = temp;
+				}
+				
+			}
+		}
+		return data;
+
 	}
 
 }
