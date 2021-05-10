@@ -5,7 +5,9 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.color.ColorSpace;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -13,6 +15,10 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageFilter;
+import java.awt.image.ImageProducer;
+import java.awt.image.RGBImageFilter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -22,6 +28,8 @@ import java.util.Scanner;
 
 import javax.swing.JPanel;
 
+
+
 public class DrawingPanel extends JPanel {
 
 	private BufferedImage bg_img;
@@ -29,7 +37,8 @@ public class DrawingPanel extends JPanel {
 	private BufferedImage imageVrstevnice;
 	private int[] data;
 	private int[] nezpracovanaData;
-	private int maxHodnota = 0;
+	private int maxHodnota;
+	private int minHodnota;
 
 	private int pocetBarev = 0;
 	double krokVysky = 0;
@@ -46,7 +55,7 @@ public class DrawingPanel extends JPanel {
 	private int thisHeight;
 	private int vyskaLegendy = 28;
 	private int indexMinimalniBarvy = 100000;
-	private int minimalniVyska;
+	
 
 	private double scale;
 
@@ -62,7 +71,7 @@ public class DrawingPanel extends JPanel {
 	 */
 	public DrawingPanel() throws FileNotFoundException {
 		this.setPreferredSize(new Dimension(800, 600));
-
+		
 		thisWidth = this.getWidth();
 		thisHeight = this.getHeight();
 
@@ -94,7 +103,7 @@ public class DrawingPanel extends JPanel {
 					}
 				}
 
-				int vyska = getZpracovanaVyska(x, y);
+				int vyska = getVyska(x, y);
 
 				int indexVrstevnice = indexBarvyVysky(vyska) + 1;
 
@@ -192,8 +201,14 @@ public class DrawingPanel extends JPanel {
 	 * @param scale
 	 */
 	public void drawLegendaMapy(Graphics2D g2, int W, int H, int startX, int startY, double scale) {
-
-		int vyska = indexMinimalniBarvy * 50;
+		int vyska; 
+		if(minHodnota < indexMinimalniBarvy * 50) {
+			vyska = (indexMinimalniBarvy - 1) * 50;
+		}
+		else {
+			vyska = indexMinimalniBarvy * 50;
+		}
+		
 		int index = 0;
 		int posuvDolu = 0;
 		int indexVyski = 1;
@@ -309,12 +324,18 @@ public class DrawingPanel extends JPanel {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
 		g2.setRenderingHints(rh);
-
-		imageVrstevnice = kresleniVrstevnic(image);
-
 		g2.drawImage(image, startX, startY, niW, niH, null);
+		
+		imageVrstevnice = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);
+		
+		imageVrstevnice = kresleniVrstevnic();
+
+		Image imageVrstevnic = processVrstevnice(imageVrstevnice);
 
 		g2.setRenderingHints(aliasing);
+		
+		g2.drawImage(imageVrstevnic, startX, startY, niW, niH, null);
+		
 		drawLegendaMapy(g2, niW, niH, startX, startY, scale);
 
 		windowsWidth = this.getWidth();
@@ -332,6 +353,23 @@ public class DrawingPanel extends JPanel {
 		drawDesc(minPrevyseniX, minPrevyseniY, "Min. prevyseni", g2, scale, startX, startY);
 
 	}
+	
+	private Image processVrstevnice(BufferedImage imageVrstevnice) {
+		
+		    ImageFilter filter = new RGBImageFilter()
+		    {
+		      public final int filterRGB(int x, int y, int rgb)
+		      {
+		        return (rgb << 8) & 0xFF000000;
+		      }
+		    };
+
+		  ImageProducer ip = new FilteredImageSource(imageVrstevnice.getSource(), filter);
+		  return Toolkit.getDefaultToolkit().createImage(ip);
+		  
+		
+	}
+	
 
 	/**
 	 * Metoda processImage() prizpusobuje PGM data nactene ze souboru, do
@@ -360,7 +398,7 @@ public class DrawingPanel extends JPanel {
 
 			Color out = new Color(in_rgb);
 
-			int grColor = out.getBlue();
+			int grColor = nezpracovanaData[i];
 
 			int koef = indexBarvyVysky(grColor);
 
@@ -383,7 +421,7 @@ public class DrawingPanel extends JPanel {
 	 */
 	public Color[] getBarvy(int pocetBarev) {
 
-		double krokBarvy = 255.0 / pocetBarev;
+		double krokBarvy = 255.0 / pocetBarev;;
 
 		double indexR = 0;
 		double indexG = 255;
@@ -432,14 +470,17 @@ public class DrawingPanel extends JPanel {
 	 * @param image
 	 * @return
 	 */
-	private BufferedImage kresleniVrstevnic(BufferedImage imageVrstevnic) {
-
+	private BufferedImage kresleniVrstevnic() {
+		
+		BufferedImage imageVrstevnic = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);  
+		System.out.println("kresleni start");
 		int[] pixels = new int[iW * iH];
 		imageVrstevnic.getRGB(0, 0, iW, iH, pixels, 0, iW);
 		int doublePixels[][] = arrayToDoubleArray(pixels);
 
 		for (int a = 0; a < poleSouradnicVrst.length; a++) {
 			for (int b = 0; b < poleSouradnicVrst[a].size(); b++) {
+				
 				int x = poleSouradnicVrst[a].get(b).getX();
 				int y = poleSouradnicVrst[a].get(b).getY();
 				doublePixels[x][y] = poleSouradnicVrst[a].get(b).getColor().getRGB();
@@ -449,7 +490,7 @@ public class DrawingPanel extends JPanel {
 
 		pixels = doubleArrayToArray(doublePixels);
 		imageVrstevnic.setRGB(0, 0, iW, iH, pixels, 0, iW);
-
+		System.out.println("kresleni stop");
 		return imageVrstevnic;
 
 	}
@@ -462,14 +503,17 @@ public class DrawingPanel extends JPanel {
 	 */
 	public void prvniZaplneniSour() {
 
-		int dataVysek[][] = arrayToDoubleArray(data);
+		int dataVysek[][] = arrayToDoubleArray(nezpracovanaData);
+		
 		poleSouradnicVrst = new ArrayList[pocetBarev];
 
+		
 		for (int i = 0; i < pocetBarev; i++) {
 			List<VrstenviceSour> list = new ArrayList<>();
 			poleSouradnicVrst[i] = list;
 		}
-
+		
+		
 		for (int a = 0; a < iW; a++) {
 			for (int b = 0; b < iH; b++) {
 
@@ -480,23 +524,26 @@ public class DrawingPanel extends JPanel {
 					int indexBarvySoused2 = indexBarvyVysky(dataVysek[a - 1][b]);
 					int indexBarvySoused3 = indexBarvyVysky(dataVysek[a][b + 1]);
 					int indexBarvySoused4 = indexBarvyVysky(dataVysek[a][b - 1]);
-
+					
+					
+					
 					VrstenviceSour souradniceVrstevnice = new VrstenviceSour(a, b);
 
 					if (indexBarvyPixel > indexBarvySoused1) {
-
+						
+						
 						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 
 					} else if (indexBarvyPixel > indexBarvySoused2) {
-
+						
 						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 
 					} else if (indexBarvyPixel > indexBarvySoused3) {
-
+						
 						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 
 					} else if (indexBarvyPixel > indexBarvySoused4) {
-
+						
 						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 
 					}
@@ -518,15 +565,8 @@ public class DrawingPanel extends JPanel {
 	 * @return
 	 */
 	public int indexBarvyVysky(int vyska) {
-		int index = 0;
+		int index = (int)Math.ceil(vyska/50.0);
 		
-		for (double i = 0; i < 255; i += krokVysky) {
-			double i1 = i - krokVysky;
-			if (i1 <= vyska && vyska <= i) {
-				return index;
-			}
-			index++;
-		}
 		return index;
 	}
 
@@ -666,7 +706,7 @@ public class DrawingPanel extends JPanel {
 			}
 		}
 		SouradniceXY minVyskaXY = new SouradniceXY(minVyskaX, minVyskaY);
-		minimalniVyska = minVyska;
+		
 		return minVyskaXY;
 	}
 
@@ -953,12 +993,8 @@ public class DrawingPanel extends JPanel {
 		}
 
 	}
-
 	
-	public void setOtevreneVrs(boolean[] otevreneVrst) {
-		this.otevreneVrst = otevreneVrst;
-	}
-
+	
 	public void setWidth(int iW) {
 		this.iW = iW;
 
@@ -967,9 +1003,16 @@ public class DrawingPanel extends JPanel {
 	public void setHeight(int iH) {
 		this.iH = iH;
 	}
+	
+	public void setOtevreneVrs(boolean[] otevreneVrst) {
+		this.otevreneVrst = otevreneVrst;
+	}
 
 	public void setMaxHodnota(int maxHodnota) {
 		this.maxHodnota = maxHodnota;
+	}
+	public void setMinHodnota(int minHodnota) {
+		this.minHodnota = minHodnota;
 	}
 
 	public void setKrokVysky(double krokVysky) {
@@ -986,6 +1029,7 @@ public class DrawingPanel extends JPanel {
 
 	public void setImage(BufferedImage bg_img) {
 		this.bg_img = bg_img;
+		
 	}
 
 	public void setData(int[] data) {

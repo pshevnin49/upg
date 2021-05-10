@@ -56,7 +56,7 @@ public class Mapa_SP2021 {
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);// prida komponentu
 		// nacteniPGM(args[0], panel);
-		nacteniPGM("data\\data_ambulance.pgm", panel);
+		nacteniPGM("data\\data_plzen.pgm", panel);
 		JPanel buttonPanel = new JPanel();
 
 		JButton btnHist = new JButton("Histogram");
@@ -150,16 +150,18 @@ public class Mapa_SP2021 {
 
 		}
 
-		double krokVysky = (255.0 / maxColor) * 50;
-		int pocetBarev = ((int) (255 / krokVysky) + 1);
+		
+		int pocetBarev = ((int) (maxColor / 50) + 2);
 
 		panel.setMaxHodnota(maxColor);
 
 		maxHodnota = maxColor;
-
-		panel.setKrokVysky(krokVysky);
+		
+		panel.setMinHodnota(minHodnota);
+		
 
 		panel.setPocetBarev(pocetBarev);
+		
 		boolean[] otevreneVrstevnice = new boolean[pocetBarev];
 
 		for (int i = 0; i < pocetBarev; i++) {
@@ -177,9 +179,10 @@ public class Mapa_SP2021 {
 
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 		img.setRGB(0, 0, width, height, pixels, 0, width);
+		
 		panel.setWidth(img.getWidth());
 		panel.setHeight(img.getHeight());
-
+		
 		panel.prvniZaplneniSour();
 		panel.setImage(img);
 	}
