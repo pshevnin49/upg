@@ -112,6 +112,8 @@ public class DrawingPanel extends JPanel {
 
 				barveniVrstevnice(indexVrstevnice, redColor);
 				otevreneVrst[indexVrstevnice] = true;
+				
+				System.out.println(indexBarvyVysky(vyska) + " indexBarvy");
 
 				repaint();
 
@@ -191,7 +193,7 @@ public class DrawingPanel extends JPanel {
 	 */
 	public void drawLegendaMapy(Graphics2D g2, int W, int H, int startX, int startY, double scale) {
 
-		int vyska = minimalniVyska;
+		int vyska = indexMinimalniBarvy * 50;
 		int index = 0;
 		int posuvDolu = 0;
 		int indexVyski = 1;
@@ -517,8 +519,8 @@ public class DrawingPanel extends JPanel {
 	 */
 	public int indexBarvyVysky(int vyska) {
 		int index = 0;
+		
 		for (double i = 0; i < 255; i += krokVysky) {
-
 			double i1 = i - krokVysky;
 			if (i1 <= vyska && vyska <= i) {
 				return index;
