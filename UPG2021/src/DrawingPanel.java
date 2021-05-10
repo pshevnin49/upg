@@ -326,15 +326,16 @@ public class DrawingPanel extends JPanel {
 		g2.setRenderingHints(rh);
 		g2.drawImage(image, startX, startY, niW, niH, null);
 		
-		imageVrstevnice = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);
 		
-		imageVrstevnice = kresleniVrstevnic();
-
-		Image imageVrstevnic = processVrstevnice(imageVrstevnice);
+		
+		imageVrstevnice = kresleniVrstevnic(image);
+		
+		g2.drawImage(imageVrstevnice, startX, startY, niW, niH, null);
+		
 
 		g2.setRenderingHints(aliasing);
 		
-		g2.drawImage(imageVrstevnic, startX, startY, niW, niH, null);
+		
 		
 		drawLegendaMapy(g2, niW, niH, startX, startY, scale);
 
@@ -354,21 +355,7 @@ public class DrawingPanel extends JPanel {
 
 	}
 	
-	private Image processVrstevnice(BufferedImage imageVrstevnice) {
-		
-		    ImageFilter filter = new RGBImageFilter()
-		    {
-		      public final int filterRGB(int x, int y, int rgb)
-		      {
-		        return (rgb << 8) & 0xFF000000;
-		      }
-		    };
-
-		  ImageProducer ip = new FilteredImageSource(imageVrstevnice.getSource(), filter);
-		  return Toolkit.getDefaultToolkit().createImage(ip);
-		  
-		
-	}
+	
 	
 
 	/**
@@ -470,9 +457,9 @@ public class DrawingPanel extends JPanel {
 	 * @param image
 	 * @return
 	 */
-	private BufferedImage kresleniVrstevnic() {
+	private BufferedImage kresleniVrstevnic(BufferedImage imageVrstevnic) {
 		
-		BufferedImage imageVrstevnic = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);  
+		//BufferedImage imageVrstevnic = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);  
 		System.out.println("kresleni start");
 		int[] pixels = new int[iW * iH];
 		imageVrstevnic.getRGB(0, 0, iW, iH, pixels, 0, iW);
