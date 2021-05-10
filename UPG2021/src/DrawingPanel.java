@@ -30,8 +30,7 @@ public class DrawingPanel extends JPanel {
 	private int[] data;
 	private int[] nezpracovanaData;
 	private int maxHodnota = 0;
-	
-	
+
 	private int pocetBarev = 0;
 	double krokVysky = 0;
 	Color[] poleBarev;
@@ -55,7 +54,12 @@ public class DrawingPanel extends JPanel {
 
 	private int windowsWidth = 0;
 	private int windowsHeight = 0;
-
+	
+	/**
+	 * Konstruktor DrawingPanel zpracovava zmacknuti mysi 
+	 * 
+	 * @throws FileNotFoundException
+	 */
 	public DrawingPanel() throws FileNotFoundException {
 		this.setPreferredSize(new Dimension(800, 600));
 
@@ -158,7 +162,7 @@ public class DrawingPanel extends JPanel {
 	}
 
 	/**
-	 * 
+	 * Metoda prijima index vrstevnice kterou se treba zabarvit, a barvu.
 	 * @param indexVrstevnice
 	 * @param color
 	 */
@@ -176,7 +180,7 @@ public class DrawingPanel extends JPanel {
 
 	/**
 	 * Metoda kresli pod mapou spravnou legendu, a prekresluje ji v pripade zmeny
-	 * rozmeru okna
+	 * rozmeru okna. Kdyz barev je prilis mnoho, zvetsuje krok.
 	 * 
 	 * @param g2
 	 * @param W
@@ -223,7 +227,9 @@ public class DrawingPanel extends JPanel {
 
 			}
 		} else {
+
 			for (int i = indexMinimalniBarvy; i < pocetBarev; i += krokBarvy) {
+				
 				int vyska2 = vyska + (50 * krokBarvy);
 				int x = startX + 10;
 
@@ -353,17 +359,14 @@ public class DrawingPanel extends JPanel {
 			Color out = new Color(in_rgb);
 
 			int grColor = out.getBlue();
-			
-			
 
 			int koef = indexBarvyVysky(grColor);
-			
+
 			in_rgb = poleBarev[koef].getRGB();
-			
+
 			if (indexMinimalniBarvy > koef) {
 				indexMinimalniBarvy = koef;
 			}
-
 
 			pixels[i] = in_rgb;
 
@@ -383,7 +386,7 @@ public class DrawingPanel extends JPanel {
 		double indexR = 0;
 		double indexG = 255;
 		double indexB = 80;
-		Random rand = new Random();
+
 		Color[] poleBarev = new Color[pocetBarev];
 
 		for (int i = 0; i < pocetBarev; i++) {
@@ -402,6 +405,12 @@ public class DrawingPanel extends JPanel {
 			}
 			while (indexG > 255) {
 				indexG--;
+			}
+
+			if (indexR >= 252 && indexG >= 252 && indexB >= 252) {
+				indexR = 102;
+				indexG = 19;
+				indexB = 182;
 			}
 
 			Color color1 = new Color((int) indexR, (int) indexG, (int) indexB);
@@ -509,7 +518,7 @@ public class DrawingPanel extends JPanel {
 	public int indexBarvyVysky(int vyska) {
 		int index = 0;
 		for (double i = 0; i < 255; i += krokVysky) {
-			
+
 			double i1 = i - krokVysky;
 			if (i1 <= vyska && vyska <= i) {
 				return index;
@@ -638,7 +647,7 @@ public class DrawingPanel extends JPanel {
 	 * @return SouradniceXY
 	 */
 	public SouradniceXY minPrevyseni(int pixels[][]) {
-		int minVyska = 1000;
+		int minVyska = 10000000;
 		int minVyskaX = 0;
 		int minVyskaY = 0;
 		int width = pixels.length;
@@ -646,7 +655,7 @@ public class DrawingPanel extends JPanel {
 
 		for (int a = 0; a < height; a++) {//
 			for (int b = 0; b < width; b++) {
-				if (pixels[b][a] < minVyska) {
+				if (pixels[b][a] <= minVyska) {
 					minVyska = pixels[b][a];
 					minVyskaX = b;
 					minVyskaY = a;
@@ -752,11 +761,6 @@ public class DrawingPanel extends JPanel {
 
 		double c_x = x2 - u_x * tip_length;
 		double c_y = y2 - u_y * tip_length;
-
-		System.out.println(width - startX + " width");
-		System.out.println(x1 + " x");
-		System.out.println(height + " height");
-		System.out.println(y1 + " y");
 
 		if (x1 > startX && x1 < width + startX) {
 			if (y1 > 0 && y1 < height) {
@@ -948,10 +952,7 @@ public class DrawingPanel extends JPanel {
 
 	}
 
-	/**
-	 * 
-	 * gettery a settery
-	 */
+	
 	public void setOtevreneVrs(boolean[] otevreneVrst) {
 		this.otevreneVrst = otevreneVrst;
 	}

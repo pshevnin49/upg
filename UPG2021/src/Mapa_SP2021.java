@@ -57,7 +57,7 @@ public class Mapa_SP2021 {
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);// prida komponentu
 		// nacteniPGM(args[0], panel);
-		nacteniPGM("data\\data_jedna.pgm", panel);
+		nacteniPGM("data\\data_ambulance.pgm", panel);
 		JPanel buttonPanel = new JPanel();
 
 		JButton btnHist = new JButton("Histogram");
@@ -272,7 +272,7 @@ public class Mapa_SP2021 {
 		render.setDefaultItemLabelsVisible(true);
 
 		BarRenderer br = (BarRenderer) render;
-		br.setItemMargin(0.002);
+		br.setItemMargin(0.2);
 		br.setBarPainter(new StandardBarPainter());
 
 		return chart;
@@ -281,47 +281,62 @@ public class Mapa_SP2021 {
 	/**
 	 * Metoda spocita median prevyseni
 	 * @param data
-	 * @return
+	 * @return median
 	 */
 	private static int medianPrevyseni(int[] data) {
-		int sum = 0;
+		long sum = 0;
 		for (int i = 0; i < data.length; i++) {
 			sum += data[i];
 		}
-		return (sum / data.length);
+		return (int) (sum / data.length);
 	}
 
+	/**
+	 * Metoda spocita dolni kvartil
+	 * @param data
+	 * @return dolniKvartil
+	 */
 	private static int dolniKvartil(int[] data) {
-		int[] sortedData = bubbleSort(data);
+		int[] sortedData = sort(data);
 		int koef = (data.length/2)/2;
 		return sortedData[koef];
 	}
 
+	/**
+	 * Metoda spocita horni kvartil
+	 * @param data
+	 * @return horniKvartil
+	 */
 	private static int horniKvartil(int[] data) {
 		
-		int[] sortedData = bubbleSort(data);
+		int[] sortedData = sort(data);
 		int ctvrt = (data.length/2)/2;
 		int koef = (data.length/2) + ctvrt;
-		return data[koef];
+		return sortedData[koef];
 	}
-
-	static int[] bubbleSort(int[] arr) {
-		int [] data = arr;
-		int n = data.length;
-		int temp = 0;
-		for (int i = 0; i < n; i++) {
-			for (int j = 1; j < (n - i); j++) {
-				if (data[j - 1] > data[j]) {
-					// swap elements
-					temp = data[j - 1];
-					data[j - 1] = data[j];
-					data[j] = temp;
-				}
-				
-			}
+	
+	/**
+	 * Metoda sortuje pole data
+	 * @param data
+	 * @return sortedData
+	 */
+	static int[]sort(int[] arr) {
+		System.out.println("start sort");
+		List <Integer> data = new ArrayList<>();
+		
+		for(int i = 0; i < arr.length; i++) {
+			 data.add(arr[i]);
 		}
-		return data;
-
+		
+		Collections.sort(data);
+		
+		for(int i = 0; i < arr.length; i++) {
+			arr[i] = data.get(i);
+		}
+		System.out.println("stop sort");
+		return arr;
+		
+		
 	}
 
 }
