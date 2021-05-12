@@ -56,8 +56,8 @@ public class Mapa_SP2021 {
 
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);// prida komponentu
-		//nacteniPGM(args[0], panel);
-		nacteniPGM("data\\data_plzen.pgm", panel);
+		nacteniPGM(args[0], panel);
+		//nacteniPGM("data\\data_plzen.pgm", panel);
 		JPanel buttonPanel = new JPanel();
 
 		JButton btnHist = new JButton("Histogram");

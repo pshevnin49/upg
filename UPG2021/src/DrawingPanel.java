@@ -511,6 +511,7 @@ public class DrawingPanel extends JPanel {
 	 * @param image
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public void prvniZaplneniSour() {
 
 		int dataVysek[][] = arrayToDoubleArray(nezpracovanaData);
