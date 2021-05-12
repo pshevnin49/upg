@@ -38,7 +38,7 @@ public class Mapa_SP2021 {
 	private static int[] dataProGraf;
 	private static int maxHodnota;
 	private static int minHodnota = 1000000;
-
+	private static int pocetBarev;
 	/**
 	 * Metoda main, tvori instance tridy JPanel, a instance tridy DrawingPanel
 	 * 
@@ -52,11 +52,12 @@ public class Mapa_SP2021 {
 
 		okno.setTitle("Pavel Shevnin A20B0231P");
 		okno.setSize(900, 700);
+		
 
 		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);// prida komponentu
-		nacteniPGM(args[0], panel);
-		//nacteniPGM("data\\data_carovy_kod.pgm", panel);
+		//nacteniPGM(args[0], panel);
+		nacteniPGM("data\\data_plzen.pgm", panel);
 		JPanel buttonPanel = new JPanel();
 
 		JButton btnHist = new JButton("Histogram");
@@ -78,7 +79,7 @@ public class Mapa_SP2021 {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				prvniGraf1();
+				oknoPrvniGraf();
 
 			}
 		});
@@ -151,9 +152,7 @@ public class Mapa_SP2021 {
 		}
 
 		
-		int pocetBarev = ((int) (maxColor / 50) + 2);
-
-		panel.setMaxHodnota(maxColor);
+		pocetBarev = ((int) (maxColor / 50) + 2);
 
 		maxHodnota = maxColor;
 		
@@ -186,6 +185,7 @@ public class Mapa_SP2021 {
 		panel.prvniZaplneniSour();
 		panel.setImage(img);
 	}
+	
 	/**
 	 * Metoda tvori okno pro graf histogram prevyseni, v okne vykresluje JFrechart graf
 	 */
@@ -205,7 +205,7 @@ public class Mapa_SP2021 {
 	/**
 	 * Metoda tvori okno pro prvni graf z ukolu prevyseni, v okne vykresluje JFrechart graf
 	 */
-	private static void prvniGraf1() {
+	private static void oknoPrvniGraf() {
 		JFrame win1 = new JFrame();
 		win1.setTitle("Graf");
 
@@ -241,7 +241,7 @@ public class Mapa_SP2021 {
 
 		plot.setBackgroundPaint(Color.WHITE);
 
-		XYItemRenderer render = plot.getRenderer();
+		
 
 		return chart;
 	}

@@ -1,13 +1,4 @@
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
+
 import java.awt.color.ColorSpace;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -25,10 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.awt.*;
 
 import javax.swing.JPanel;
-
-
 
 public class DrawingPanel extends JPanel {
 
@@ -37,7 +27,7 @@ public class DrawingPanel extends JPanel {
 	private BufferedImage imageVrstevnice;
 	private int[] data;
 	private int[] nezpracovanaData;
-	private int maxHodnota;
+
 	private int minHodnota;
 
 	private int pocetBarev = 0;
@@ -55,7 +45,6 @@ public class DrawingPanel extends JPanel {
 	private int thisHeight;
 	private int vyskaLegendy = 28;
 	private int indexMinimalniBarvy = 100000;
-	
 
 	private double scale;
 
@@ -63,15 +52,15 @@ public class DrawingPanel extends JPanel {
 
 	private int windowsWidth = 0;
 	private int windowsHeight = 0;
-	
+
 	/**
-	 * Konstruktor DrawingPanel zpracovava zmacknuti mysi 
+	 * Konstruktor DrawingPanel zpracovava zmacknuti mysi
 	 * 
 	 * @throws FileNotFoundException
 	 */
 	public DrawingPanel() throws FileNotFoundException {
 		this.setPreferredSize(new Dimension(800, 600));
-		
+
 		thisWidth = this.getWidth();
 		thisHeight = this.getHeight();
 
@@ -121,8 +110,6 @@ public class DrawingPanel extends JPanel {
 
 				barveniVrstevnice(indexVrstevnice, redColor);
 				otevreneVrst[indexVrstevnice] = true;
-				
-				System.out.println(indexBarvyVysky(vyska) + " indexBarvy");
 
 				repaint();
 
@@ -174,6 +161,7 @@ public class DrawingPanel extends JPanel {
 
 	/**
 	 * Metoda prijima index vrstevnice kterou se treba zabarvit, a barvu.
+	 * 
 	 * @param indexVrstevnice
 	 * @param color
 	 */
@@ -201,14 +189,13 @@ public class DrawingPanel extends JPanel {
 	 * @param scale
 	 */
 	public void drawLegendaMapy(Graphics2D g2, int W, int H, int startX, int startY, double scale) {
-		int vyska; 
-		if(minHodnota < indexMinimalniBarvy * 50) {
+		int vyska;
+		if (minHodnota < indexMinimalniBarvy * 50) {
 			vyska = (indexMinimalniBarvy - 1) * 50;
-		}
-		else {
+		} else {
 			vyska = indexMinimalniBarvy * 50;
 		}
-		
+
 		int index = 0;
 		int posuvDolu = 0;
 		int indexVyski = 1;
@@ -246,7 +233,7 @@ public class DrawingPanel extends JPanel {
 		} else {
 
 			for (int i = indexMinimalniBarvy; i < pocetBarev; i += krokBarvy) {
-				
+
 				int vyska2 = vyska + (50 * krokBarvy);
 				int x = startX + 10;
 
@@ -324,19 +311,21 @@ public class DrawingPanel extends JPanel {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
 		g2.setRenderingHints(rh);
+
 		g2.drawImage(image, startX, startY, niW, niH, null);
-		
-		
-		
-		imageVrstevnice = kresleniVrstevnic(image);
-		
-		g2.drawImage(imageVrstevnice, startX, startY, niW, niH, null);
-		
+
+		imageVrstevnice = new BufferedImage(iW, iH, BufferedImage.TYPE_INT_ARGB);
+
+		Image imageVrstevnic = makeColorTransparent(imageVrstevnice, new Color(0, 0, 0));
+
+		imageVrstevnice = imageToBufferedImage(imageVrstevnic);
+
+		imageVrstevnice = kresleniVrstevnic(imageVrstevnice);
 
 		g2.setRenderingHints(aliasing);
-		
-		
-		
+
+		g2.drawImage(imageVrstevnice, startX, startY, niW, niH, null);
+
 		drawLegendaMapy(g2, niW, niH, startX, startY, scale);
 
 		windowsWidth = this.getWidth();
@@ -354,9 +343,44 @@ public class DrawingPanel extends JPanel {
 		drawDesc(minPrevyseniX, minPrevyseniY, "Min. prevyseni", g2, scale, startX, startY);
 
 	}
-	
-	
-	
+
+	private static BufferedImage imageToBufferedImage(Image image) {
+
+		BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null),
+				BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = bufferedImage.createGraphics();
+		g2.drawImage(image, 0, 0, null);
+		g2.dispose();
+
+		return bufferedImage;
+
+	}
+
+	/**
+	 * 
+	 * @param imageVrstevnice
+	 * @return
+	 */
+	public static Image makeColorTransparent(BufferedImage im, final Color color) {
+		ImageFilter filter = new RGBImageFilter() {
+
+			// the color we are looking for... Alpha bits are set to opaque
+			public int markerRGB = color.getRGB() | 0xFF000000;
+
+			public final int filterRGB(int x, int y, int rgb) {
+				if ((rgb | 0xFF000000) == markerRGB) {
+					// Mark the alpha bits as zero - transparent
+					return 0x00FFFFFF & rgb;
+				} else {
+					// nothing to do
+					return rgb;
+				}
+			}
+		};
+
+		ImageProducer ip = new FilteredImageSource(im.getSource(), filter);
+		return Toolkit.getDefaultToolkit().createImage(ip);
+	}
 
 	/**
 	 * Metoda processImage() prizpusobuje PGM data nactene ze souboru, do
@@ -408,7 +432,8 @@ public class DrawingPanel extends JPanel {
 	 */
 	public Color[] getBarvy(int pocetBarev) {
 
-		double krokBarvy = 255.0 / pocetBarev;;
+		double krokBarvy = 255.0 / pocetBarev;
+		;
 
 		double indexR = 0;
 		double indexG = 255;
@@ -458,16 +483,14 @@ public class DrawingPanel extends JPanel {
 	 * @return
 	 */
 	private BufferedImage kresleniVrstevnic(BufferedImage imageVrstevnic) {
-		
-		//BufferedImage imageVrstevnic = new BufferedImage(iW, iH, BufferedImage.TYPE_3BYTE_BGR);  
-		System.out.println("kresleni start");
+
 		int[] pixels = new int[iW * iH];
 		imageVrstevnic.getRGB(0, 0, iW, iH, pixels, 0, iW);
 		int doublePixels[][] = arrayToDoubleArray(pixels);
 
 		for (int a = 0; a < poleSouradnicVrst.length; a++) {
 			for (int b = 0; b < poleSouradnicVrst[a].size(); b++) {
-				
+
 				int x = poleSouradnicVrst[a].get(b).getX();
 				int y = poleSouradnicVrst[a].get(b).getY();
 				doublePixels[x][y] = poleSouradnicVrst[a].get(b).getColor().getRGB();
@@ -477,7 +500,7 @@ public class DrawingPanel extends JPanel {
 
 		pixels = doubleArrayToArray(doublePixels);
 		imageVrstevnic.setRGB(0, 0, iW, iH, pixels, 0, iW);
-		System.out.println("kresleni stop");
+
 		return imageVrstevnic;
 
 	}
@@ -491,16 +514,14 @@ public class DrawingPanel extends JPanel {
 	public void prvniZaplneniSour() {
 
 		int dataVysek[][] = arrayToDoubleArray(nezpracovanaData);
-		
+
 		poleSouradnicVrst = new ArrayList[pocetBarev];
 
-		
 		for (int i = 0; i < pocetBarev; i++) {
 			List<VrstenviceSour> list = new ArrayList<>();
 			poleSouradnicVrst[i] = list;
 		}
-		
-		
+
 		for (int a = 0; a < iW; a++) {
 			for (int b = 0; b < iH; b++) {
 
@@ -511,26 +532,23 @@ public class DrawingPanel extends JPanel {
 					int indexBarvySoused2 = indexBarvyVysky(dataVysek[a - 1][b]);
 					int indexBarvySoused3 = indexBarvyVysky(dataVysek[a][b + 1]);
 					int indexBarvySoused4 = indexBarvyVysky(dataVysek[a][b - 1]);
-					
-					
-					
+
 					VrstenviceSour souradniceVrstevnice = new VrstenviceSour(a, b);
 
 					if (indexBarvyPixel > indexBarvySoused1) {
-						
-						
+
 						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 
 					} else if (indexBarvyPixel > indexBarvySoused2) {
-						
+
 						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 
 					} else if (indexBarvyPixel > indexBarvySoused3) {
-						
+
 						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 
 					} else if (indexBarvyPixel > indexBarvySoused4) {
-						
+
 						poleSouradnicVrst[indexBarvyPixel].add(souradniceVrstevnice);
 
 					}
@@ -552,8 +570,8 @@ public class DrawingPanel extends JPanel {
 	 * @return
 	 */
 	public int indexBarvyVysky(int vyska) {
-		int index = (int)Math.ceil(vyska/50.0);
-		
+		int index = (int) Math.ceil(vyska / 50.0);
+
 		return index;
 	}
 
@@ -693,7 +711,7 @@ public class DrawingPanel extends JPanel {
 			}
 		}
 		SouradniceXY minVyskaXY = new SouradniceXY(minVyskaX, minVyskaY);
-		
+
 		return minVyskaXY;
 	}
 
@@ -945,7 +963,8 @@ public class DrawingPanel extends JPanel {
 	}
 
 	/**
-	 * Metoda vrati vysku, ktera se nachazi na techto souradnicich
+	 * Metoda vrati vysku, ktera se nachazi na techto souradnicich, kdyz soradnice
+	 * nelezi na obrazku, vrati -1
 	 * 
 	 * @param x
 	 * @param y
@@ -964,7 +983,8 @@ public class DrawingPanel extends JPanel {
 
 	/**
 	 * Metoda vrati vysku, ktera se nachazi na techto souradnicich pracuje s polem
-	 * zpracovanych vysek (prevedene do formatu 0-255)
+	 * zpracovanych vysek (prevedene do formatu 0-255) kdyz soradnice nelezi na
+	 * obrazku, vrati -1
 	 * 
 	 * @param x
 	 * @param y
@@ -980,8 +1000,7 @@ public class DrawingPanel extends JPanel {
 		}
 
 	}
-	
-	
+
 	public void setWidth(int iW) {
 		this.iW = iW;
 
@@ -990,14 +1009,11 @@ public class DrawingPanel extends JPanel {
 	public void setHeight(int iH) {
 		this.iH = iH;
 	}
-	
+
 	public void setOtevreneVrs(boolean[] otevreneVrst) {
 		this.otevreneVrst = otevreneVrst;
 	}
 
-	public void setMaxHodnota(int maxHodnota) {
-		this.maxHodnota = maxHodnota;
-	}
 	public void setMinHodnota(int minHodnota) {
 		this.minHodnota = minHodnota;
 	}
@@ -1016,7 +1032,7 @@ public class DrawingPanel extends JPanel {
 
 	public void setImage(BufferedImage bg_img) {
 		this.bg_img = bg_img;
-		
+
 	}
 
 	public void setData(int[] data) {
