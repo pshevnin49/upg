@@ -10,21 +10,24 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.awt.image.ImageProducer;
 import java.awt.image.RGBImageFilter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.awt.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 public class DrawingPanel extends JPanel {
 
 	private BufferedImage bg_img;
-	private BufferedImage image;
-	private BufferedImage imageVrstevnice;
+	private static BufferedImage image;
+	private static BufferedImage imageVrstevnice;
 	private int[] data;
 	private int[] nezpracovanaData;
 
@@ -45,13 +48,26 @@ public class DrawingPanel extends JPanel {
 	private int thisHeight;
 	private int vyskaLegendy = 28;
 	private int indexMinimalniBarvy = 100000;
+	
+	private static int maxSloupaniX;
+	private static int maxSloupaniY;
+
+	
+	private static int maxPrevyseniX;
+	private static int maxPrevyseniY;
+
+	
+	private static int minPrevyseniX;
+	private static int minPrevyseniY;
+	
+	
 
 	private double scale;
 
 	List<VrstenviceSour>[] poleSouradnicVrst;
 
-	private int windowsWidth = 0;
-	private int windowsHeight = 0;
+	private static int windowsWidth = 0;
+	private static int windowsHeight = 0;
 
 	/**
 	 * Konstruktor DrawingPanel zpracovava zmacknuti mysi
@@ -293,16 +309,16 @@ public class DrawingPanel extends JPanel {
 		int[][] pixels = arrayToDoubleArray(nezpracovanaData);
 
 		SouradniceXY maxSloupaniSour = maxSloupani(pixels);
-		int maxSloupaniX = maxSloupaniSour.getX();
-		int maxSloupaniY = maxSloupaniSour.getY();
+		maxSloupaniX = maxSloupaniSour.getX();
+		maxSloupaniY = maxSloupaniSour.getY();
 
 		SouradniceXY maxPrevyseniSour = maxPrevyseni(pixels);
-		int maxPrevyseniX = maxPrevyseniSour.getX();
-		int maxPrevyseniY = maxPrevyseniSour.getY();
+		maxPrevyseniX = maxPrevyseniSour.getX();
+		maxPrevyseniY = maxPrevyseniSour.getY();
 
 		SouradniceXY minPrevyseniSour = minPrevyseni(pixels);
-		int minPrevyseniX = minPrevyseniSour.getX();
-		int minPrevyseniY = minPrevyseniSour.getY();
+		minPrevyseniX = minPrevyseniSour.getX();
+		minPrevyseniY = minPrevyseniSour.getY();
 
 		RenderingHints rh = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
 				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -310,15 +326,17 @@ public class DrawingPanel extends JPanel {
 		RenderingHints aliasing = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
-		g2.setRenderingHints(rh);
-
-		g2.drawImage(image, startX, startY, niW, niH, null);
-
 		imageVrstevnice = new BufferedImage(iW, iH, BufferedImage.TYPE_INT_ARGB);
 
 		Image imageVrstevnic = makeColorTransparent(imageVrstevnice, new Color(0, 0, 0));
 
 		imageVrstevnice = imageToBufferedImage(imageVrstevnic);
+		
+		
+		g2.setRenderingHints(rh);
+		
+	
+		g2.drawImage(image, startX, startY, niW, niH, null);
 
 		imageVrstevnice = kresleniVrstevnic(imageVrstevnice);
 
@@ -780,7 +798,7 @@ public class DrawingPanel extends JPanel {
 	 * @param startX
 	 * @param startY
 	 */
-	private void drawArrow(int x2, int y2, Graphics2D g2, double scale, int startX, int startY, int width, int height) {
+	private static void drawArrow(int x2, int y2, Graphics2D g2, double scale, int startX, int startY, int width, int height) {
 
 		x2 = (int) ((x2 * scale) + startX);
 		y2 = (int) ((y2 * scale) + startY);
@@ -834,7 +852,7 @@ public class DrawingPanel extends JPanel {
 	 * @param startX Posuv obrazku
 	 * @param startY Posuv obrazku
 	 */
-	private void drawDesc(int x2, int y2, String nadpis, Graphics2D g2, double scale, int startX, int startY) {
+	private static void drawDesc(int x2, int y2, String nadpis, Graphics2D g2, double scale, int startX, int startY) {
 
 		x2 = (int) (x2 * scale + startX);
 		y2 = (int) (y2 * scale + startY);
@@ -915,7 +933,7 @@ public class DrawingPanel extends JPanel {
 	 * @param y2 souradnice Y konce sibky
 	 * @return vypoceSouradniceXY
 	 */
-	private SouradniceXY vypocetSouradniceX1Y1(int x2, int y2, int startX, int startY, double scale) {
+	private static SouradniceXY vypocetSouradniceX1Y1(int x2, int y2, int startX, int startY, double scale) {
 
 		double x1 = 0;
 		double y1 = 0;
@@ -1001,6 +1019,42 @@ public class DrawingPanel extends JPanel {
 		}
 
 	}
+	
+	 public static void saveImage(int x, int y) {
+	     
+		 	int iW = image.getWidth();
+		 	int iH = image.getHeight();
+		 	
+		  	BufferedImage savedImage = new BufferedImage(x, y, BufferedImage.TYPE_INT_RGB);
+		  	Graphics2D imageGraphics = savedImage.createGraphics();
+		  	
+		  	double scaleX = ((double) x) / iW;
+			double scaleY = ((double) y) / iH;
+
+			double scaleSaved = Math.min(scaleX, scaleY);
+
+			int niW = (int) (iW * scaleSaved);
+			int niH = (int) (iH * scaleSaved);
+
+			imageGraphics.drawImage(image, 0, 0, niW, niH, null);
+			imageGraphics.drawImage(imageVrstevnice, 0, 0, niW, niH, null);
+			
+			drawArrow(maxSloupaniX, maxSloupaniY, imageGraphics, scaleSaved, 0, 0, niW, niH);
+			drawDesc(maxSloupaniX, maxSloupaniY, "Max. sloupani", imageGraphics, scaleSaved, 0, 0);
+
+			drawArrow(maxPrevyseniX, maxPrevyseniY, imageGraphics, scaleSaved, 0, 0, niW, niH);
+			drawDesc(maxPrevyseniX, maxPrevyseniY, "Max. prevyseni", imageGraphics, scaleSaved, 0, 0);
+
+			drawArrow(minPrevyseniX, minPrevyseniY, imageGraphics, scaleSaved, 0, 0, niW, niH);
+			drawDesc(minPrevyseniX, minPrevyseniY, "Min. prevyseni", imageGraphics, scaleSaved, 0, 0);
+		  	
+		  	
+		 	try {
+	            ImageIO.write(savedImage, "png", new File("mapa" + ".png"));
+	        } catch (IOException e) {
+	            System.out.println("Nepodarilo se zapsat obrazek `" + "mapa" + "'.");
+	        }        
+	    }
 
 	public void setWidth(int iW) {
 		this.iW = iW;

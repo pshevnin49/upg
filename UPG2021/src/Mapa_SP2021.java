@@ -13,6 +13,7 @@ import java.util.*;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.jfree.chart.ChartFactory;
@@ -39,32 +40,34 @@ public class Mapa_SP2021 {
 	private static int maxHodnota;
 	private static int minHodnota = 1000000;
 	private static int pocetBarev;
+
 	/**
 	 * Metoda main, tvori instance tridy JPanel, a instance tridy DrawingPanel
 	 * 
 	 * @param args
 	 * @throws FileNotFoundException
 	 */
-
+	static DrawingPanel panel;
 	public static void main(String[] args) throws FileNotFoundException {
 
 		JFrame okno = new JFrame();
 
 		okno.setTitle("Pavel Shevnin A20B0231P");
 		okno.setSize(900, 700);
+		panel = new DrawingPanel();
 		
-
-		DrawingPanel panel = new DrawingPanel();
 		okno.add(panel);// prida komponentu
-		nacteniPGM(args[0], panel);
-		//nacteniPGM("data\\data_plzen.pgm", panel);
+		// nacteniPGM(args[0], panel);
+		nacteniPGM("data\\data_plzen.pgm", panel);
 		JPanel buttonPanel = new JPanel();
 
 		JButton btnHist = new JButton("Histogram");
 		JButton btnGraf = new JButton("Graf");
+		JButton btnPNG = new JButton("PNG");
 
 		buttonPanel.add(btnHist, BorderLayout.WEST);
-		buttonPanel.add(btnGraf, BorderLayout.EAST);
+		buttonPanel.add(btnGraf, BorderLayout.CENTER);
+		buttonPanel.add(btnPNG, BorderLayout.EAST);
 
 		btnHist.addActionListener(new ActionListener() {
 
@@ -80,6 +83,15 @@ public class Mapa_SP2021 {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				oknoPrvniGraf();
+
+			}
+		});
+
+		btnPNG.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dialog();
 
 			}
 		});
@@ -151,16 +163,14 @@ public class Mapa_SP2021 {
 
 		}
 
-		
 		pocetBarev = ((int) (maxColor / 50) + 2);
 
 		maxHodnota = maxColor;
-		
+
 		panel.setMinHodnota(minHodnota);
-		
 
 		panel.setPocetBarev(pocetBarev);
-		
+
 		boolean[] otevreneVrstevnice = new boolean[pocetBarev];
 
 		for (int i = 0; i < pocetBarev; i++) {
@@ -178,22 +188,22 @@ public class Mapa_SP2021 {
 
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
 		img.setRGB(0, 0, width, height, pixels, 0, width);
-		
+
 		panel.setWidth(img.getWidth());
 		panel.setHeight(img.getHeight());
-		
+
 		panel.prvniZaplneniSour();
 		panel.setImage(img);
 	}
-	
+
 	/**
-	 * Metoda tvori okno pro graf histogram prevyseni, v okne vykresluje JFrechart graf
+	 * Metoda tvori okno pro graf histogram prevyseni, v okne vykresluje JFrechart
+	 * graf
 	 */
 	private static void histogramGraf() {
 		JFrame win = new JFrame();
 		win.setTitle("Histogram prevyseni");
 
-		
 		ChartPanel panel = new ChartPanel(histogram(dataProGraf));
 		win.add(panel);
 
@@ -202,14 +212,15 @@ public class Mapa_SP2021 {
 		win.setVisible(true);
 
 	}
+
 	/**
-	 * Metoda tvori okno pro prvni graf z ukolu prevyseni, v okne vykresluje JFrechart graf
+	 * Metoda tvori okno pro prvni graf z ukolu prevyseni, v okne vykresluje
+	 * JFrechart graf
 	 */
 	private static void oknoPrvniGraf() {
 		JFrame win1 = new JFrame();
 		win1.setTitle("Graf");
 
-		
 		ChartPanel panel = new ChartPanel(prvniGraf());
 		win1.add(panel);
 
@@ -221,6 +232,7 @@ public class Mapa_SP2021 {
 
 	/**
 	 * Metoda tvori histogram vysek pomoci knihovny Jfreechart
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -241,12 +253,12 @@ public class Mapa_SP2021 {
 
 		plot.setBackgroundPaint(Color.WHITE);
 
-		
-
 		return chart;
 	}
+
 	/**
 	 * Metoda tvori 1. graf z ukolu pomoci knihovny Jfreechart
+	 * 
 	 * @return
 	 */
 	private static JFreeChart prvniGraf() {
@@ -280,8 +292,10 @@ public class Mapa_SP2021 {
 		return chart;
 
 	}
+
 	/**
 	 * Metoda spocita median prevyseni
+	 * 
 	 * @param data
 	 * @return median
 	 */
@@ -295,48 +309,85 @@ public class Mapa_SP2021 {
 
 	/**
 	 * Metoda spocita dolni kvartil
+	 * 
 	 * @param data
 	 * @return dolniKvartil
 	 */
 	private static int dolniKvartil(int[] data) {
 		int[] sortedData = sort(data);
-		int koef = (data.length/2)/2;
+		int koef = (data.length / 2) / 2;
 		return sortedData[koef];
 	}
 
 	/**
 	 * Metoda spocita horni kvartil
+	 * 
 	 * @param data
 	 * @return horniKvartil
 	 */
 	private static int horniKvartil(int[] data) {
-		
+
 		int[] sortedData = sort(data);
-		int ctvrt = (data.length/2)/2;
-		int koef = (data.length/2) + ctvrt;
+		int ctvrt = (data.length / 2) / 2;
+		int koef = (data.length / 2) + ctvrt;
 		return sortedData[koef];
 	}
-	
+
 	/**
 	 * Metoda sortuje pole data
+	 * 
 	 * @param data
 	 * @return sortedData
 	 */
-	static int[]sort(int[] arr) {
+	static int[] sort(int[] arr) {
 		System.out.println("start sort");
-		List <Integer> data = new ArrayList<>();
-		
-		for(int i = 0; i < arr.length; i++) {
-			 data.add(arr[i]);
+		List<Integer> data = new ArrayList<>();
+
+		for (int i = 0; i < arr.length; i++) {
+			data.add(arr[i]);
 		}
-		
+
 		Collections.sort(data);
-		
-		for(int i = 0; i < arr.length; i++) {
+
+		for (int i = 0; i < arr.length; i++) {
 			arr[i] = data.get(i);
 		}
 		System.out.println("stop sort");
 		return arr;
+
+	}
+
+	public static void dialog() {
+		JFrame frame = new JFrame();
+		Object[] possibilities = { "840-600", "420-300", "210-150" };
+		String rozliseni = (String) JOptionPane.showInputDialog(frame, "Zachovat obrazek do PNG:\n" + "Vyberte rozliseni:",
+				"Customized Dialog", JOptionPane.PLAIN_MESSAGE, null, possibilities, "ham");
+		
+		int x = 0;
+		int y = 0;
+		
+		// If a string was returned, say so.
+		if(rozliseni != null) {
+			if ( (rozliseni.equals("840-600"))) {
+				System.out.println("Obrazek: " + " 800");
+				x = 840;
+				y = 600;
+			}
+			else if(rozliseni.equals("420-300")) {
+				System.out.println("Obrazek: " + " 400");
+				x = 420;
+				y = 300;
+			}
+			else if(rozliseni.equals("210-150")) {
+				System.out.println("Obrazek: " + " 200");
+				x = 210;
+				y = 150;
+			}
+			if(x != 0 && y != 0) {
+				panel.saveImage(x, y);
+			}
+			
+		}
 		
 		
 	}
